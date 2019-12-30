@@ -1,0 +1,98 @@
+.sbwcaufix = function(dat, ind, out, bal, wei, sol, par) {
+  if (class(dat[, ind]) == "factor") {
+    dat[, ind] = as.numeric(as.character(dat[, ind]))
+  } 
+  if (sum(dat[, ind] != 1 & dat[, ind] != 0) > 0)
+    stop(paste("Please input a binary or a logical variable for \"", ind, "\".", sep = ""))
+  
+  # Transform from factor to numeric
+  fac_ind = sapply(dat, is.factor)
+  dat[fac_ind] = lapply(dat[fac_ind], function(x) as.numeric(as.character(x)))
+  # Preprocess for cate
+  if(par$par_est %in% c("cate","pop")) {
+    # Calculate target
+    if (class(par$par_tar) == "character") {
+      dat = subset(dat, eval(parse(text = par$par_tar)))
+      bal$bal_tar = colMeans(as.matrix(dat[, bal$bal_cov]))
+    } else if (class(par$par_tar) == "numeric") {
+      if (sum(fac_ind) >= 1) {
+        dat = dat[apply(dat[fac_ind] == par$par_tar[match(names(fac_ind), names(par$par_tar))][fac_ind], 1, prod, na.rm = TRUE) %in% 1,]
+      }
+      bal$bal_tar = par$par_tar
+    } else if (class(par$par_tar) == "NULL") {
+      bal$bal_tar = colMeans(as.matrix(dat[, bal$bal_cov]))
+    }
+  }
+
+  if (sum(dat[ ,ind] == 0) == 0) {
+    stop("Positivity is not satisfied.")
+  } 
+  if (sum(dat[ ,ind] == 1) == 0) {
+    stop("Positivity is not satisfied.")
+  } 
+  
+  # Order dat by ind
+  ord = order(dat[, ind], decreasing = FALSE)
+  dat = dat[ord, ]
+  # Divide dat into list of data frames by levels of ind
+  dat_level = by(dat, dat[, ind], function(x) x)
+  if (par$par_est %in% c("ate", "cate")) {
+    # Calculate target
+    bal$bal_tar = colMeans(as.matrix(dat[, bal$bal_cov]))
+    sbwfix_level = lapply(dat_level, .sbwauxfix, bal = bal, wei = wei, sol = sol)
+    # Get weights
+    weights = lapply(sbwfix_level, function(x) x$dat_weights$weights)
+    # Calculate effective sample size
+    eff_size = lapply(weights, function(x) sum(x)^2/sum(x^2))
+    # Update the outputs
+    weights = unlist(weights)
+    obj_total = lapply(sbwfix_level, function(x) x$obj_total)
+    time = lapply(sbwfix_level, function(x) x$time)
+    status = lapply(sbwfix_level, function(x) x$status)
+    dual_table = lapply(sbwfix_level, function(x) x$dual_table)
+    target = lapply(sbwfix_level, function(x) x$target)
+  } else if (par$par_est %in% c("att", "atc", "pop")) {
+    if (par$par_est %in% "att") {
+      # Calculate target
+      bal$bal_tar = colMeans(as.matrix(dat[which(dat[, ind] == 1), bal$bal_cov]))
+      sbwfix_level = .sbwauxfix(dat_level[[1]], bal = bal, wei = wei, sol = sol)
+      # Get weights
+      weights = sbwfix_level$dat_weights$weights
+      # Calculate effective sample size
+      eff_size = sum(weights)^2/sum(weights^2)
+      # Update the data frame
+      weights = c(weights, rep(1/(nrow(dat) - length(weights)), nrow(dat) - length(weights)))
+    } else if (par$par_est %in% "atc") {
+      bal$bal_tar = colMeans(as.matrix(dat[which(dat[, ind] == 0), bal$bal_cov]))
+      sbwfix_level = .sbwauxfix(dat_level[[2]], bal = bal, wei = wei, sol = sol)
+      # Get weights
+      weights = sbwfix_level$dat_weights$weights
+      # Calculate effective sample size
+      eff_size = sum(weights)^2/sum(weights^2)
+      # Update the data frame
+      weights = c(rep(1/(nrow(dat) - length(weights)), nrow(dat) - length(weights)), weights)
+    } else if (par$par_est %in% "pop") {
+      sbwfix_level = .sbwauxfix(dat_level[[1]], bal = bal, wei = wei, sol = sol)
+      # Get weights
+      weights = sbwfix_level$dat_weights$weights
+      # Calculate effective sample size
+      eff_size = sum(weights)^2/sum(weights^2)
+      # Update the data frame
+      weights = c(weights, rep(0, nrow(dat) - length(weights)))
+    }
+    # Update the outputs
+    obj_total = sbwfix_level$obj_total
+    time = sbwfix_level$time
+    status = sbwfix_level$status
+    dual_table = sbwfix_level$dual_table
+    target = sbwfix_level$target
+  }
+  # Update the data frame
+  dat_weights = dat
+  dat_weights$weights = weights
+  dat_weights = dat_weights[order(ord), ]
+  dat_weights[fac_ind] = lapply(dat_weights[fac_ind], function(x) as.factor(x))
+  
+  output = list(ind = ind, out = out, bal = bal, obj_total = obj_total, eff_size = eff_size, time = time, status = status, dat_weights = dat_weights, dual_table = dual_table, target = target, par = par)
+  return(output)
+}

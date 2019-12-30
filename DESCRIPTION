@@ -1,0 +1,30 @@
+Package: sbw
+Type: Package
+Version: 1.0
+Date: 2019-12-06
+Title: Stable Balancing Weights for Causal Inference and Estimation
+        with Incomplete Outcome Data
+Authors@R: c(person("Jose R.", "Zubizarreta", role = c("aut", "cre"),
+                     email = "zubizarreta@hcp.med.harvard.edu"),
+             person("Yige", "Li", role = "aut",
+                     email = "yige_li@hcp.med.harvard.edu"),
+             person("Amine", "Allouah", role = "ctb",
+                     email = "mallouah19@gsb.columbia.edu"),
+             person("Noah", "Greifer", role = "ctb",
+                     email = "ngreifer@live.unc.edu"))
+Maintainer: Jose R. Zubizarreta <zubizarreta@hcp.med.harvard.edu>
+Depends: R (>= 3.2), Matrix, quadprog, slam
+Imports: MASS, spatstat
+Enhances: gurobi, Rcplex, Rmosek, pogs
+License: GPL-2 | GPL-3
+Description: Weights of minimum variance that approximately balance the empirical distribution of the observed covariates.
+RoxygenNote: 6.1.1
+Suggests: knitr, rmarkdown
+NeedsCompilation: no
+Packaged: 2019-12-17 23:10:25 UTC; yige
+Author: Jose R. Zubizarreta [aut, cre],
+  Yige Li [aut],
+  Amine Allouah [ctb],
+  Noah Greifer [ctb]
+Repository: CRAN
+Date/Publication: 2019-12-30 15:20:02 UTC
