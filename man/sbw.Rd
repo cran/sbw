@@ -4,134 +4,151 @@
 \alias{sbw}
 \title{Stable balancing weights for causal contrasts and population means.}
 \source{
+{\url{https://www.ibm.com/products/ilog-cplex-optimization-studio}}
+
+{\url{https://www.gurobi.com/products/gurobi-optimizer/}}
+
+{\url{https://www.mosek.com/products/mosek/}}
+
 {\url{http://foges.github.io/pogs/stp/r}}
 }
 \usage{
-sbw(dat, ind = NULL, out = NULL, bal = list(bal_cov, bal_alg = TRUE,
-  bal_tol, bal_std = TRUE, bal_gri = c(1e-04, 0.001, 0.002, 0.005, 0.01,
-  0.02, 0.05, 0.1), bal_sam = 1000), wei = list(wei_sum = TRUE, wei_pos =
-  TRUE), sol = list(sol_nam = "quadprog", sol_dis = FALSE),
-  par = list(par_est = "att", par_tar = NULL))
+sbw(
+  dat,
+  ind = NULL,
+  out = NULL,
+  bal = list(bal_cov, bal_alg = TRUE, bal_tol, bal_std = "group", bal_gri = c(1e-04,
+    0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1), bal_sam = 1000),
+  wei = list(wei_sum = TRUE, wei_pos = TRUE),
+  sol = list(sol_nam = "quadprog", sol_dis = FALSE),
+  par = list(par_est = "att", par_tar = NULL)
+)
 }
 \arguments{
-\item{dat}{data, a data frame including a treatment or missingness indicator plus covariates; outcomes are optional.}
+\item{dat}{data, a data frame with a treatment assignment or missingness indicator, covariates, and possibly outcomes (which are optional).}
 
-\item{ind}{treatment or missingness indicator, a string with the name of the binary treatment or missingness, equal to 1 if treated (missing) and 0 otherwise. 
+\item{ind}{treatment assignment or missingness indicator, a string with the name of the binary treatment or missingness indicator, equal to 1 if treated (missing) and 0 otherwise. 
 When \code{par$par_est = "aux"}, \code{ind} is omitted.}
 
 \item{out}{outcome, a vector of strings with the names of the outcome variables. The default is \code{NULL}.}
 
-\item{bal}{balance requirements, a list with requirements for covariate balance with the form
+\item{bal}{balance requirements, a list with the requirements for covariate balance with the form
 \code{list(bal_cov, bal_alg, bal_tol, bal_std, bal_gri, bal_sam)}, where:
 
-\code{bal_cov}: balance covariates, a vector of strings with the names of the covariates in \code{dat} to be balanced.
-In simple applications, the balance covariates in \code{bal_cov} will be the column names of \code{dat} (of course,
-without including the treatment or outcome variables) for the original covariates in the data set. The covariates need to be either continuous or binary. 
-Categorical variables need to be transformed into dummy variables. In more complex applications, the covariates in \code{dat} can be 
-transformations of the original covariates in order to balance higher order single dimensional moments such as variances and skewness,
-and multidimensional moments such as correlations. If the transformations of the covariates are indicators of the quantiles
+\code{bal_cov} balance covariates, a vector of strings with the names of the covariates in \code{dat} to be balanced.
+In simple applications, the balance covariates in \code{bal_cov} will be the column names of \code{dat} 
+(without including the treatment or outcome variables) for the original covariates in the data set. The covariates need to be either continuous or binary. 
+Categorical covariates need to be transformed into dummies. In more complex applications, the covariates in \code{dat} can be 
+transformations of the original covariates in order to balance higher order single or multidimensional moments, or other basis functions. If the transformations of the covariates are indicators of the quantiles
 of the empirical distribution of a covariate, then balancing all these indicators will tend to balance the entire marginal distribution
 of the covariate.
 
-\code{bal_alg} balance algorithm, a logical that indicates whtether the tuning algorithm in Wang and Zubizarreta (2019) is 
-to be used for automatically selecting the degree of approximate covariates balance.  The default is TRUE.  
+\code{bal_alg} balance algorithm, a logical that indicates whether the tuning algorithm in Wang and Zubizarreta (2020) is 
+to be used for automatically selecting the degree of approximate covariates balance.  The default is \code{TRUE}.  
 See the argument \code{bal_gri} below for the candidate values for the degree of approximate covariate balance.
 
-\code{bal_tol}: balance tolerances, a scalar or vector of scalars
-defining the tolerances or maximum differences in means after weighting for the covariates defined in \code{bal_cov}.
-Note that if \code{bal_tol} is a vector then its length has to be equal to the length of \code{bal_cov}. 
-Otherwise, the first element in the vector will be taken as the balance tolerance for all the constraints in \code{bal_cov}.
+\code{bal_tol} balance tolerances, a scalar or vector of scalars
+that define the tolerances or maximum differences in means after weighting for the covariates (or transformations thereof) defined in \code{bal_cov}.
+Note that if \code{bal_tol} is a vector, then its length has to be equal to the length of \code{bal_cov}. 
+Otherwise, the first element in \code{bal_tol} will be taken as the balance tolerance for all the constraints in \code{bal_cov}.
 
-\code{bal_std}: balance tolerances in standard deviations, a logical that indicates
-whether the tolerances specified in \code{bal_tol} are expressed in the original units of the covariates
-or in standard deviations. The default is \code{TRUE}, meaning that the tolerances are expressed in standard deviations.
+\code{bal_std} balance tolerances in standard deviations, a string that represent 
+how the tolerances are adjusted. If \code{bal_std = "group"}, the tolerances 
+are proportional to the standard deviations in the group/groups to be weighted.
+If \code{bal_std = "target"}, the tolerances are proportional to the standard deviations 
+in the target group. If \code{bal_std = "manual"}, the tolerances equal to \code{bal_tol}.
+The default is \code{"group"}.
 
-\code{bal_gri}: grid of values for the tuning algorithm \code{bal_alg}, a vector of candidate values for the degree of approximate covariate balance. 
+\code{bal_gri} grid of values for the tuning algorithm \code{bal_alg}, a vector of candidate values for the degree of approximate covariate balance. 
 The default is \code{c(0.0001, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1)}. 
-The computational time is roughlly proportional to the number of grid values.
+The computational time is roughly proportional to the number of grid values.
 
-\code{bal_sam}: number of replicates to be used in \code{bal_alg}, an integer specifying the number of bootstrap sample replicates 
-to be used to select the degree of approximate covariate balance.  See Wang and Zubizarreta (2019) for details. The default is \code{1000}.}
+\code{bal_sam} number of replicates to be used in \code{bal_alg}, an integer specifying the number of bootstrap sample replicates 
+to be used to select the degree of approximate covariate balance.  See Wang and Zubizarreta (2020) for details. The default is \code{1000}.}
 
 \item{wei}{weighting constraints, a list with all the weighting constraints with the form
 \code{list(wei_sum, wei_pos)}, where:
 
-\code{wei_sum}: sum of weights, a logical variable indicating whether the weights are constrained to sum up to one, or their sum 
+\code{wei_sum} sum of weights, a logical variable indicating whether the weights are constrained to sum up to one, or whether their sum 
 is unconstrained. The default is \code{TRUE} for the sum of weights equal to one. Note that if \code{wei_sum = TRUE}, then \code{wei_pos = TRUE}.
 
-\code{wei_pos}: positive or zero (non-negative) weights, a logical variable indicating whether the weights are constrained to be non-negative, or they
+\code{wei_pos} positive or zero (non-negative) weights, a logical variable indicating whether the weights are constrained to be non-negative, or whether they
 are unconstrained. The default is \code{TRUE} for non-negative weights.  Again, note that if \code{wei_sum = TRUE}, then \code{wei_pos = TRUE}.}
 
-\item{sol}{solver, a list specifying the solver option with the form
-\code{list(sol_nam, sol_dis, sol_pog)} where:
+\item{sol}{solver, a list that specifies the solver option with the form
 
-\code{sol_nam}: solver name, a string equals to one of "cplex", "gurobi", "mosek", "pogs", "quadprog".
+\code{list(sol_nam, sol_dis, sol_pog)}, where:
+
+\code{sol_nam} solver name, a string equal to either \code{"cplex"}, \code{"gurobi"}, \code{"mosek"}, \code{"pogs"}, or \code{"quadprog"}.
 CPLEX, Gurobi and MOSEK are commercial solvers, but free for academic users. 
 POGS and QUADPROG are free for all. In our experience, POGS is the fastest solver option
 and able to handle larger datasets, but it can be difficult to install for non-Mac users 
-and more difficult to callibrate. MOSEK is more stable than POGS and fast. 
-The default option is solver = "quadprog". 
+and more difficult to calibrate. MOSEK is more stable than POGS and faster. 
+The default option is \code{sol_nam = "quadprog"}. 
 
-\code{sol_dis}: solver display, a logical variable indicating whether the output is to be displayed or not.
-The default is FALSE. This option is specific to "cplex", "gurobi", "mosek" and "pogs".
+\code{sol_dis} solver display, a logical variable indicating whether the output is to be displayed or not.
+The default is \code{FALSE}. This option is specific to \code{"cplex"}, \code{"gurobi"}, \code{"mosek"}, and \code{"pogs"}.
 
-\code{sol_pog}: solver options specific to "pogs", with the following default parameters:
+\code{sol_pog} solver options specific to \code{"pogs"}, with the following default parameters:
 
 \code{sol_pog = list(sol_pog_max_iter = 100000, sol_pog_rel_tol = 1e-4,} 
+
 \code{sol_pog_abs_tol = 1e-4, sol_pog_gap_stp = TRUE, sol_pog_adp_rho = TRUE)}.
 
 See the POGS manual for details.}
 
 \item{par}{parameter of interest, a list describing the parameter of interest or estimand with the form
-\code{list(par_est, par_tar)}, where
+\code{list(par_est, par_tar)}, where:
 
-\code{par_est} estimand, a string. For causal inference, a string equals to one of:
-"att" (Average Treatment effect among the Treated), 
-"atc" (Average Treatment effect among the Controls), 
-"ate" (Average Treatment Effect), 
-"cate" (Conditional Average Treatment Effect). 
+\code{par_est} estimand. For causal inference, a string equal to:
+\code{"att"} (Average Treatment effect on the Treated), 
+\code{"atc"} (Average Treatment effect on the Controls), 
+\code{"ate"} (Average Treatment Effect), 
+\code{"cate"} (Conditional Average Treatment Effect). 
 For estimation with incomplete outcome data, a string equal to:
-"pop" (Population Means) or
-"aux" (Specified Targets by users). The default is "att".
+\code{"pop"} (General population means) or
+\code{"aux"} (Means for a population specified by the user). The default is \code{"att"}.
 
-\code{par_tar} target, a string or a vector that specifies the targeted population for inference in terms of 
-the observed covariates if \code{par_est} = "cate", "pop" or "aux" with the form 
-of determine statements. Please see the examples. It also accepts a numeric vector 
-as specified balance targets for \code{bal$bal_cov}.}
+\code{par_tar} target, a string, or a vector of scalars. 
+It specifies the targeted population for inference in terms of the observed covariates 
+when \code{par_est = "cate"}, \code{"pop"} or \code{"aux"}. Please see the examples.}
 }
 \value{
 A list with the following elements:
 
-\code{ind}{, an inputted argument}
+\code{dat_weights}{, a data frame with the optimal weights } \code{dat_weights$sbw_weights} {;}
 
-\code{out}{, an inputted argument}
+\code{ind}{, an argument provided by the user;}
 
-\code{bal}{, an inputted argument}
+\code{out}{, an argument provided by the user;}
 
-\code{wei}{, an inputted argument}
+\code{bal}{, an argument provided by the user;}
 
-\code{sol}{, an inputted argument}
+\code{wei}{, an argument provided by the user;}
 
-\code{par}{, an inputted argument}
+\code{sol}{, an argument provided by the user;}
 
-\code{obj_total}{, value/values of the objective function/functions at the optimum;}
+\code{par}{, an argument provided by the user;}
 
-\code{eff_size}{, effective sample size/sizes for the weighted group/groups;}
+\code{effective_sample_size}{, effective sample size/sizes for the weighted group/groups;}
+
+\code{objective_value}{, value/values of the objective function/functions at the optimum;}
+
+\code{status}{, status of the solution. If the optimal weights are found,} \code{status = optimal};
+{ otherwise, the solution may be not optimal or not exist, in which case an error will be returned with details specific to the solver used.}
+{ For the solver "quadprog", the status code is missing, therefore, } \code{status = NA} {;}
 
 \code{time}{, time elapsed to find the optimal solution;}
 
-\code{status}{, status of the solution. If the optimal weights are found,} \code{status = optimal}
-{; otherwise, the solution may be not optimal or not exist, in which case an error will be returned with details specific to the solver used.}
-{ For the solver "quadprog", the status code is missing, therefore, } \code{status = NA} {;}
+\code{shadow_price}{, dual variables or shadow prices of the covariate balance constraints;}
 
-\code{dat_weights}{, data frame with the optimal weights named by weights;}
+\code{balance_parameters}{, details of the balance parameters;}
 
-\code{dual_table}{, dual variables or shadow prices of the covariate balancing constraints;}
-
-\code{target}{, details of the balance targets, which are saved for evaluation uses.}
+\code{cstat}{, covariate balance statistic used in Wang and Zubizarreta (2020).}
+{A magnitude to be minimized to select the degree of approximate balance in } \code{bal$bal_gri} {.}
 }
 \description{
-Function for finding stable weights (this is, weights of minimum variance) that approximately balance the empirical distribution of the observed covariates.
+Function for finding stable weights (that is, weights of minimum variance) that approximately balance the empirical distribution of the observed covariates.
 }
 \examples{
 # Simulate data
@@ -177,59 +194,61 @@ bal$bal_cov = c("X1", "X2", "X3", "X4")
 
 # Set tolerances
 bal$bal_tol = 0.02
-bal$bal_std = TRUE
+bal$bal_std = "group"
 
-# Solve for the Average Treatment effect among the Treated, ATT (default)
+# Solve for the Average Treatment Effect on the Treated, ATT (default)
 bal$bal_alg = FALSE
-sbwatt.object = sbw(dat = data_frame, ind = t_ind, out = "Y", bal = bal)
+sbwatt_object = sbw(dat = data_frame, ind = t_ind, out = "Y", bal = bal)
 
 # # Solve for a Conditional Average Treatment Effect, CATE
-# sbwcate.object = sbw(dat = data_frame, ind = t_ind, out = "Y", bal = bal, 
+# sbwcate_object = sbw(dat = data_frame, ind = t_ind, out = "Y", bal = bal, 
 # sol = list(sol_nam = "quadprog"), par = list(par_est = "cate", par_tar = "X1 > 1 & X3 <= 0.22"))
 
 # # Solve for the population mean, POP
 # tar = colMeans(bal_cov)
 # names(tar) = bal$bal_cov
-# sbwpop.object = sbw(dat = data_frame, ind = t_ind, out = "Y", bal = bal, 
+# sbwpop_object = sbw(dat = data_frame, ind = t_ind, out = "Y", bal = bal, 
 # sol = list(sol_nam = "quadprog"), par = list(par_est = "pop"))
 
 # # Solve for a target population mean, AUX
-# sbwaux.object = sbw(dat = data_frame, bal = bal, 
+# sbwaux_object = sbw(dat = data_frame, bal = bal, 
 # sol = list(sol_nam = "quadprog"), par = list(par_est = "aux", par_tar = tar*1.05))
 
 # # Solve for the ATT using the tuning algorithm
 # bal$bal_alg = TRUE
 # bal$bal_sam = 1000
-# sbwatttun.object = sbw(dat = data_frame, ind = t_ind, out = "Y", bal = bal, 
+# sbwatttun_object = sbw(dat = data_frame, ind = t_ind, out = "Y", bal = bal, 
 # sol = list(sol_nam = "quadprog"), par = list(par_est = "att", par_tar = NULL))
 
 # Check
-summarize(sbwatt.object)
-# summarize(sbwcate.object)
-# summarize(sbwpop.object)
-# summarize(sbwaux.object)
-# summarize(sbwatttun.object)
+summarize(sbwatt_object)
+# summarize(sbwcate_object)
+# summarize(sbwpop_object)
+# summarize(sbwaux_object)
+# summarize(sbwatttun_object)
 
 # Estimate
-estimate(sbwatt.object)
-# estimate(sbwcate.object)
-# estimate(sbwpop.object)
-# estimate(sbwatttun.object)
+estimate(sbwatt_object)
+# estimate(sbwcate_object)
+# estimate(sbwpop_object)
+# estimate(sbwatttun_object)
 
 # Visualize
-visualize(sbwatt.object)
-# visualize(sbwcate.object)
-# visualize(sbwpop.object)
-# visualize(sbwaux.object)
-# visualize(sbwatttun.object)
+visualize(sbwatt_object)
+# visualize(sbwcate_object)
+# visualize(sbwpop_object)
+# visualize(sbwaux_object)
+# visualize(sbwatttun_object)
 
 }
 \references{
-Chattopadhyay, A., Hase, C. H., and Zubizarreta, J. R. (2019), "Balancing Versus Modeling Approaches to Weighting in Practice," submitted.
+Chattopadhyay, A., Hase, C. H., and Zubizarreta, J. R. (2020), "Balancing Versus Modeling Approaches to Weighting in Practice," Statistics in Medicine, in press.
 
 Kang, J. D. Y., and Schafer, J. L. (2007), "Demistifying Double Robustness: A Comparison of Alternative Strategies for Estimating a Population Mean from Incomplete Data," Statistical Science, 22, 523-539.
 
-Wang, Y., and Zubizarreta, J. R. (2019), "Minimal Dispersion Approximately Balancing Weights: Asymtotic Properties and Practical Considerations," Biometrika, in press.
+Stuart, E. A. Matching methods for causal inference: a review and a look forward. Statistical Science 2010; 25(1): 1-21.
+
+Wang, Y., and Zubizarreta, J. R. (2020), "Minimal Dispersion Approximately Balancing Weights: Asymtotic Properties and Practical Considerations," Biometrika, 107, 93-105.
 
 Zubizarreta, J. R. (2015), "Stable Weights that Balance Covariates for Estimation with Incomplete Outcome Data," Journal of the American Statistical Association, 110, 910-922.
 }

@@ -1,7 +1,7 @@
 Package: sbw
 Type: Package
-Version: 1.0
-Date: 2019-12-06
+Version: 1.1.1
+Date: 2020-06-22
 Title: Stable Balancing Weights for Causal Inference and Estimation
         with Incomplete Outcome Data
 Authors@R: c(person("Jose R.", "Zubizarreta", role = c("aut", "cre"),
@@ -17,14 +17,14 @@ Depends: R (>= 3.2), Matrix, quadprog, slam
 Imports: MASS, spatstat
 Enhances: gurobi, Rcplex, Rmosek, pogs
 License: GPL-2 | GPL-3
-Description: Weights of minimum variance that approximately balance the empirical distribution of the observed covariates.
-RoxygenNote: 6.1.1
+Description: Implements the Stable Balancing Weights by Zubizarreta (2015) <DOI:10.1080/01621459.2015.1023805>. These are the weights of minimum variance that approximately balance the empirical distribution of the observed covariates. For an overview, see Chattopadhyay, Hase and Zubizarreta (2020) <DOI:10.1002/(ISSN)1097-0258>. To solve the optimization problem in 'sbw', the default solver is 'quadprog', which is readily available through CRAN. To enhance the performance of 'sbw', users are encouraged to install other solvers such as 'gurobi' and 'Rmosek', which require special installation. 
+RoxygenNote: 7.0.2
 Suggests: knitr, rmarkdown
 NeedsCompilation: no
-Packaged: 2019-12-17 23:10:25 UTC; yige
+Packaged: 2020-06-23 13:29:25 UTC; yige
 Author: Jose R. Zubizarreta [aut, cre],
   Yige Li [aut],
   Amine Allouah [ctb],
   Noah Greifer [ctb]
 Repository: CRAN
-Date/Publication: 2019-12-30 15:20:02 UTC
+Date/Publication: 2020-06-23 15:30:02 UTC

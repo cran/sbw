@@ -1,14 +1,14 @@
 if(getRversion() >= "2.15.1")
   utils::globalVariables(
     c("abline", "boxplot", "bal", "bal_cov", "bal_tar0", "bal_tar1", "bal_tol", "cor", "dat_weights", "density",
-      "digits", "dual_table", "dual_table0", "dual_table1", "eff_size", "gri",
-      "lb", "legend", "lines", "obj_total", "par", "plot", "pt", 
+      "digits", "shadow_price", "shadow_price0", "shadow_price1", "effective_sample_size", "gri",
+      "lb", "legend", "lines", "objective_value", "par", "plot", "pt", 
       "Qmat", "qt", "sam", "sd", "segments", "sense", "status",
       "tail", "target", "target0", "target1", "time", "ub",
       "var_type", "var", "weights", "weighted.mean", "..."))
 
 # Translate the balancing problem to an optimization problem and acquire parameters for solvers.
-.problemparameters = function(dat, nor, bal, normalize, w_min) {
+.problemparameters = function(dat, nor, bal, normalize, w_min, sd_target) {
   # Check bal arguments
   if (length(bal$bal_cov) == 0) {
     stop("bal_cov should not be empty.")
@@ -33,28 +33,27 @@ if(getRversion() >= "2.15.1")
   bal_tar = bal$bal_tar
   names(bal_tar) = bal$bal_cov
   bal_tol = bal$bal_tol
-  bal_std = ifelse(is.null(bal$bal_std), TRUE, bal$bal_std)
-
-  # Get bal_new
-  if (length(bal_tol) > 1) {
-    if (length(bal$bal_cov) != length(bal_tol)) {
-      warning("The length of bal$bal_cov and bal$bal_tol are different. The first element of bal$bal_tol will be used as bal$bal_tol.")
-      bal_tol = bal_tol[1]
-      if (bal_std == TRUE) {
-        bal_tol = apply(bal_cov, 2, sd)*bal_tol
-      } else if (bal_std != FALSE) {
-        stop("bal$bal_std should be either TRUE or FALSE.")
-      }
-    }
+  bal_std = ifelse(is.null(bal$bal_std), "group", bal$bal_std)
+  
+  if (length(bal_tol) > 1 & (length(bal$bal_cov) != length(bal_tol))) {
+    warning("The length of bal$bal_cov and bal$bal_tol are different. The first element of bal$bal_tol will be used as bal$bal_tol.")
+    bal_tol = rep(bal_tol[1], length(bal$bal_cov))
+    names(bal_tol)  = bal$bal_cov
   }
   if (length(bal_tol) == 1) {
-    if (bal_std == TRUE) {
-      bal_tol = apply(bal_cov, 2, sd)*bal_tol
-    } else if (bal_std == FALSE) {
-      bal_tol = rep(bal_tol, length(bal$bal_cov))
-      names(bal_tol)  = bal$bal_cov
-    } else stop("bal_std should be either TRUE or FALSE.")
+    bal_tol = rep(bal_tol, length(bal$bal_cov))
+    names(bal_tol)  = bal$bal_cov
   }
+  
+  if (bal_std %in% "group") {
+    bal_tol = apply(bal_cov, 2, sd)*bal_tol
+  } else if (bal_std %in% "target") {
+    bal_tol = sd_target*bal_tol
+  } else if (!(bal_std %in% c("group", "target", "manual"))) {
+    stop("bal$bal_std should be equal to one of 'group', 'target', 'manual'.")
+  }
+  
+  # Get bal_new
   bal_new = list(bal_tar = bal_tar, bal_tol = bal_tol, bal_std = bal_std)
   
   # Get n, p

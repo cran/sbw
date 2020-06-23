@@ -95,15 +95,15 @@
       weights = weights/sum(weights)
     }
     # Get objective
-    obj_total = 2*out$optval - n*sum(weights/n)^2
+    objective_value = 2*out$optval - n*sum(weights/n)^2
     # Get dual table
-    dual_table = NULL
+    shadow_price = NULL
   } else {
     cat(format("  Optimal weights not found."), "\n")
     stop(paste("pogs status code = ", status))
   }
   
-  return(list(obj_total = obj_total, status = status, weights = weights, dual_table = dual_table))
+  return(list(objective_value = objective_value, status = status, weights = weights, shadow_price = shadow_price))
 }
 
 # solver: cplex
@@ -169,16 +169,16 @@
     weights = weights/sum(weights)
   }
   # Get objective
-  obj_total = out$obj
+  objective_value = out$obj
   # Get dual table
   dual_vars = out$extra$lambda[names(bvec) != ""]
   dual_names = names(bvec)[names(bvec) != ""]
   if (!is.null(dual_vars)) {
     names(dual_vars) = dual_names
-    dual_table  = .dualtable(dual_vars)
-  } else dual_table = NULL
+    shadow_price  = .dualtable(dual_vars)
+  } else shadow_price = NULL
   
-  return(list(obj_total = obj_total, status = status, weights = weights, dual_table = dual_table))
+  return(list(objective_value = objective_value, status = status, weights = weights, shadow_price = shadow_price))
 }  
    
 # solver: quadprog
@@ -264,8 +264,8 @@
     weights = weights/sum(weights)
   }
   # Get objective
-  obj_total = out$value - n*mean(weights)^2
-  if (is.na(obj_total) | is.nan(obj_total)| is.null(obj_total)) {
+  objective_value = out$value - n*mean(weights)^2
+  if (is.na(objective_value) | is.nan(objective_value)| is.null(objective_value)) {
     cat(format("  Optimal weights not found."), "\n")
   } else cat(format("  Optimal weights found."), "\n")
   # No status code
@@ -277,10 +277,10 @@
   dual_names = names(bvec)[names(bvec) != ""]
   if (!is.null(dual_vars)) {
     names(dual_vars) = dual_names
-    dual_table  = .dualtable(dual_vars)
-  } else dual_table = NULL
+    shadow_price  = .dualtable(dual_vars)
+  } else shadow_price = NULL
   
-  return(list(obj_total = obj_total, status = status, weights = weights, dual_table = dual_table))
+  return(list(objective_value = objective_value, status = status, weights = weights, shadow_price = shadow_price))
 }  
 
 
@@ -348,16 +348,16 @@
     # weights = weights/sum(weights)
   # }
   # # Get objective
-  # obj_total = NA
+  # objective_value = NA
   # if (is.na(weights[1])) {
     # cat(format("  Optimal weights not found."), "\n")
   # } else cat(format("  Optimal weights found."), "\n")
   # # No status code
   # status = NA
   # # Get dual table
-  # dual_table = NULL
+  # shadow_price = NULL
   
-  # return(list(obj_total = obj_total, status = status, weights = weights, dual_table = dual_table))
+  # return(list(objective_value = objective_value, status = status, weights = weights, shadow_price = shadow_price))
 # }  
 
 
@@ -428,19 +428,20 @@
     weights = weights/sum(weights)
   }
   # Get objective
-  obj_total = out$obj
+  objective_value = out$obj
   # Get dual table
   dual_vars = out$pi[names(bvec) != ""]
   dual_names = names(bvec)[names(bvec) != ""]
   if (!is.null(dual_vars)) {
     names(dual_vars) = dual_names
-    dual_table  = .dualtable(dual_vars)
-  } else dual_table = NULL
+    shadow_price  = .dualtable(dual_vars)
+  } else shadow_price = NULL
   
-  return(list(obj_total = obj_total, status = status, weights = weights, dual_table = dual_table))
+  return(list(objective_value = objective_value, status = status, weights = weights, shadow_price = shadow_price))
 }
 
 # solver = mosek
+# upgraded to Rmosek 1.3.5
 .sbwprimosek = function(problemparameters.object, verbose) {
   normalize = problemparameters.object$normalize
   nor = problemparameters.object$nor
@@ -475,29 +476,34 @@
     mos = list()
     if (normalize == 1) {
       meq = sum(sense == "E")
-      mos$Aeq = as.matrix(Amat[(nrow(Amat) - meq + 1):nrow(Amat),], nrow = meq)
-      mos$beq = bvec[(length(bvec) - meq + 1):length(bvec)]
-      # Amat = as.matrix(Amat)
+      # Specify the A matrix
       Amat = .as.sparseMatrix(Amat)
-      mos$A = Amat[-((nrow(Amat) - meq + 1):nrow(Amat)),]
-      mos$b = bvec[-((length(bvec) - meq + 1):length(bvec))]
+      mos$A = Amat
+      # Specify the bounds of the constraints
+      mos$bc = rbind(blc = c(rep(-Inf, length(bvec) - meq), bvec[(length(bvec) - meq + 1):length(bvec)]),
+                     buc = bvec)
     } else {
-        # Amat = as.matrix(Amat)
-        Amat = .as.sparseMatrix(Amat)
-        mos$Aeq = NA
-        mos$beq = NA
-        mos$A = Amat
-        mos$b = bvec
+      # Specify the A matrix
+      Amat = .as.sparseMatrix(Amat)
+      mos$A = Amat
+      # Specify the bounds of the constraints
+      mos$bc = rbind(blc = rep(-Inf, length(bvec)), 
+                     buc = bvec)
     }
-    mos$F = Matrix::Diagonal(n)*sqrt(2)
-    mos$f = cvec
-    mos$lb = lb
-    mos$ub = ub
-      
-    prob = Rmosek::mosek_qptoprob(F = mos$F, f = mos$f, A = mos$A, b = mos$b, Aeq = mos$Aeq, beq = mos$beq, lb = mos$lb, ub = mos$ub)
+    # Specify the sense
+    mos$sense = "min"
+    # Specify the c vector
+    mos$c = cvec
+    # Specify the quadratic objective matrix in triplet form.
+    mos$qobj$i = 1:n
+    mos$qobj$j = 1:n
+    mos$qobj$v = rep(2.0, n)
+    # Specify the bounds of the variables
+    mos$bx = rbind(blx = lb,
+                   bux = ub)
     cat(format("  Mosek optimizer is opening..."), "\n")
     cat(format("  Finding the optimal weights..."), "\n")
-    out = Rmosek::mosek(prob, opts = list(verbose = verbose))
+    out = Rmosek::mosek(mos, list(verbose = verbose))
   }
   if (nor == "l_1" | nor == "l_inf") {
     # For l_1 and l_inf norm
@@ -511,29 +517,34 @@
     mos = list()
     if (normalize == 1) {
       meq = sum(sense == "E")
-      mos$Aeq = as.matrix(Amat[(nrow(Amat)-meq+1):nrow(Amat),], nrow = meq)
-      mos$beq = bvec[(length(bvec)-meq+1):length(bvec)]
+      # Specify the A matrix
       Amat = .as.sparseMatrix(Amat)
-      mos$A = Amat[-((nrow(Amat)-meq+1):nrow(Amat)),]
-      mos$b = bvec[-((length(bvec)-meq+1):length(bvec))]
-    } else {
-      mos$Aeq = NA
-      mos$beq = NA
       mos$A = Amat
-      mos$b = bvec
+      # Specify the bounds of the constraints
+      mos$bc = rbind(blc = c(rep(-Inf, length(bvec) - meq), bvec[(length(bvec) - meq + 1):length(bvec)]),
+                     buc = bvec)
+    } else {
+      # Specify the A matrix
+      Amat = .as.sparseMatrix(Amat)
+      mos$A = Amat
+      # Specify the bounds of the constraints
+      mos$bc = rbind(blc = rep(-Inf, length(bvec)), 
+                     buc = bvec)
     }
-    mos$f = cvec
-    mos$lb = lb
-    mos$ub = ub
-      
-    prob = Rmosek::mosek_lptoprob(f = mos$f, A = mos$A, b = mos$b, Aeq = mos$Aeq, beq = mos$beq, lb = mos$lb, ub = mos$ub)
+    # Specify the sense
+    mos$sense = "min"
+    # Specify the c vector
+    mos$c = cvec
+    # Specify the bounds of the variables
+    mos$bx = rbind(blx = lb,
+                   bux = ub)
     cat(format("  Mosek optimizer is opening..."), "\n")
     cat(format("  Finding the optimal weights..."), "\n")
-    out = Rmosek::mosek(prob, opts = list(verbose = verbose))
+    out = Rmosek::mosek(mos, list(verbose = verbose))
   }
   # Get status
   code = out$response$code
-  solsta = out$sol$it$solsta
+  solsta = out$sol$itr$solsta
   if (!is.null(solsta)) {
     if (code == 0) {
       # Get weights
@@ -541,7 +552,7 @@
       if (solsta == "OPTIMAL") {
         status = "optimal"
         cat(format("  Optimal weights found."), "\n")
-        obj_total = as.numeric(prob$c %*% out$sol$itr$xx - n*mean(weights)^2)
+        objective_value = as.numeric(mos$c %*% out$sol$itr$xx - n*mean(weights)^2)
         if (lb[1] == 0 & min(weights, na.rm = TRUE) < 0) {
           weights[weights < 0] = 0
         }
@@ -553,24 +564,24 @@
         dual_names = names(bvec)[names(bvec) != ""]
         if (!is.null(dual_vars)) {
           names(dual_vars) = dual_names
-          dual_table  = .dualtable(dual_vars)
-        } else dual_table = NULL
+          shadow_price  = .dualtable(dual_vars)
+        } else shadow_price = NULL
       } else {
         status = solsta
         cat(format("  Problem ill-posed."), "\n")
-        message("  Please find the mosek status code on https://docs.mosek.com/8.1/capi/response-codes.html")
+        message("  Please find the mosek status on https://docs.mosek.com/9.1/rmosek/accessing-solution.html")
         stop(paste("Mosek status = ", status))
       }
     } else {
       cat(format("  Optimal weights not found."), "\n")
-      message("  Please find the mosek status code on https://docs.mosek.com/8.1/capi/response-codes.html")
+      message("  Please find the mosek status code on https://docs.mosek.com/9.1/rmosek/response-codes.html")
       stop(paste("Mosek status code = ", code))
       } 
   } else {
     cat(format("  Optimal weights not found."), "\n")
-    message("  Please find the mosek status code on https://docs.mosek.com/8.1/capi/response-codes.html")
+    message("  Please find the mosek status code on https://docs.mosek.com/9.1/rmosek/response-codes.html")
     stop(paste("Mosek status code = ", code))
   }  
     
-  return(list(obj_total = obj_total, status = status, weights = weights, dual_table = dual_table))
+  return(list(objective_value = objective_value, status = status, weights = weights, shadow_price = shadow_price))
 }

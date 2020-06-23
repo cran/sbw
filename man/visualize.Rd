@@ -4,18 +4,20 @@
 \alias{visualize}
 \title{Visualize output from \code{sbw}}
 \usage{
-visualize(object, plot_cov, ...)
+visualize(object, plot_cov, ask = TRUE, ...)
 }
 \arguments{
 \item{object}{an object from function \code{\link[sbw]{sbw}}.}
 
 \item{plot_cov}{names of covariates for which balance is to be displayed.  If \code{NULL}, all of the covariates will be displayed.}
 
-\item{...}{ignored}
+\item{ask}{logical. If \code{TRUE} (and the R session is interactive) the user is asked for input, before a new figure is drawn.}
+
+\item{...}{ignored arguments.}
 }
 \description{
 Function for visualizing the output from \code{\link[sbw]{sbw}}.
 }
 \examples{
-# Please see the examples in \\code{sbw}.
+# Please see the examples in the function sbw above.
 }

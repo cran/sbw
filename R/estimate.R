@@ -1,11 +1,13 @@
 # Estimate output from sbwcau
-.estimate.sbwcau = function(object, digits = 2, ...) {
+.estimate.sbwcau = function(object, out = NULL, digits, ...) {
   if (class(object) != "sbwcau") {
     warning("Object not of class \"sbwcau\"")
     return(invisible(NULL))
   }
   ind = object$ind
-  out = object$out
+  if (is.null(out)) {
+    out = object$out
+  }
   # if (is.null(out)) {stop("argument \"out\" is missing in the function \"sbw\".")}
   dat = object$dat_weights
   if (sum(1 - is.na(match(out, colnames(dat)))) == 0) {
@@ -16,15 +18,21 @@
   
   if (object$par$par_est == "att") {
     tre_ind = dat[, ind]
-    weights0 = dat$weights*(1 - tre_ind)
-    weights1 = dat$weights*tre_ind
+    weights0 = dat$sbw_weights*(1 - tre_ind)
+    weights1 = dat$sbw_weights*tre_ind
     n = sum(tre_ind == 1)
     Y = as.matrix(dat[, out])
     dat[, ind] = NULL
     dat[, out] = NULL
-    dat$weights = NULL
+    dat$sbw_weights = NULL
     dat = dat[, object$bal$bal_cov]
     dat = as.matrix(dat)
+    
+    # remove collinear columns
+    qr_dat = qr(dat, tol = 1e-9, LAPACK = FALSE)
+    rank_dat = qr_dat$rank
+    keep_dat = qr_dat$pivot[seq_len(rank_dat)]
+    dat = dat[, keep_dat, drop=FALSE]
     tmp = cor(dat)
     tmp[upper.tri(tmp)] = 0
     diag(tmp) = 0
@@ -38,15 +46,21 @@
   }
   if (object$par$par_est == "atc") {
     tre_ind = dat[, ind]
-    weights0 = dat$weights*(1 - tre_ind)
-    weights1 = dat$weights*tre_ind
+    weights0 = dat$sbw_weights*(1 - tre_ind)
+    weights1 = dat$sbw_weights*tre_ind
     n = sum(tre_ind == 0)
     Y = as.matrix(dat[, out])
     dat[, ind] = NULL
     dat[, out] = NULL
-    dat$weights = NULL
+    dat$sbw_weights = NULL
     dat = dat[, object$bal$bal_cov]
     dat = as.matrix(dat)
+    
+    # remove collinear columns
+    qr_dat = qr(dat, tol = 1e-9, LAPACK = FALSE)
+    rank_dat = qr_dat$rank
+    keep_dat = qr_dat$pivot[seq_len(rank_dat)]
+    dat = dat[, keep_dat, drop=FALSE]
     tmp = cor(dat)
     tmp[upper.tri(tmp)] = 0
     diag(tmp) = 0
@@ -60,15 +74,21 @@
   }
   if (object$par$par_est == "ate") {
     tre_ind = dat[, ind]
-    weights0 = dat$weights*(1 - tre_ind)
-    weights1 = dat$weights*tre_ind
+    weights0 = dat$sbw_weights*(1 - tre_ind)
+    weights1 = dat$sbw_weights*tre_ind
     n = length(weights0)
     Y = as.matrix(dat[, out])
     dat[, ind] = NULL
     dat[, out] = NULL
-    dat$weights = NULL
+    dat$sbw_weights = NULL
     dat = dat[, object$bal$bal_cov]
     dat = as.matrix(dat)
+    
+    # remove collinear columns
+    qr_dat = qr(dat, tol = 1e-9, LAPACK = FALSE)
+    rank_dat = qr_dat$rank
+    keep_dat = qr_dat$pivot[seq_len(rank_dat)]
+    dat = dat[, keep_dat, drop=FALSE]
     tmp = cor(dat)
     tmp[upper.tri(tmp)] = 0
     diag(tmp) = 0
@@ -91,15 +111,21 @@
       dat[fac_ind] = NULL
     }
     tre_ind = dat[, ind]
-    weights0 = dat$weights*(1 - tre_ind)
-    weights1 = dat$weights*tre_ind
+    weights0 = dat$sbw_weights*(1 - tre_ind)
+    weights1 = dat$sbw_weights*tre_ind
     n = length(weights0)
     Y = as.matrix(dat[, out])
     dat[, ind] = NULL
     dat[, out] = NULL
-    dat$weights = NULL
+    dat$sbw_weights = NULL
     dat = dat[, object$bal$bal_cov[!(object$bal$bal_cov %in% names(which(fac_ind == TRUE)))]]
     dat = as.matrix(dat)
+    
+    # remove collinear columns
+    qr_dat = qr(dat, tol = 1e-9, LAPACK = FALSE)
+    rank_dat = qr_dat$rank
+    keep_dat = qr_dat$pivot[seq_len(rank_dat)]
+    dat = dat[, keep_dat, drop=FALSE]
     tmp = cor(dat)
     tmp[upper.tri(tmp)] = 0
     diag(tmp) = 0
@@ -129,14 +155,16 @@
 }
 
 # Estimate output from sbwpop
-.estimate.sbwpop = function(object, digits = 2, ...) {
+.estimate.sbwpop = function(object, out = NULL, digits, ...) {
   if (class(object) != "sbwpop") {
     warning("Object not of class \"sbwpop\"")
     return(invisible(NULL))
   }
   if (object$par$par_est == "pop") {
     ind = object$ind
-    out = object$out
+    if (is.null(out)) {
+      out = object$out
+    }
     # if (is.null(out)) {stop("argument \"out\" is missing in the function \"sbw\".")}
     dat = object$dat_weights
     if (sum(1 - is.na(match(out, colnames(dat)))) == 0) {
@@ -155,14 +183,20 @@
     }
     tre_ind = dat[, ind]
     dat = dat[tre_ind == 0,]
-    weights = dat$weights
+    weights = dat$sbw_weights
     n = length(weights)
     Y = as.matrix(dat[, out])
     dat[, ind] = NULL
     dat[, out] = NULL
-    dat$weights = NULL
+    dat$sbw_weights = NULL
     dat = dat[, object$bal$bal_cov[!(object$bal$bal_cov %in% names(which(fac_ind == TRUE)))]]
     dat = as.matrix(dat)
+    
+    # remove collinear columns
+    qr_dat = qr(dat, tol = 1e-9, LAPACK = FALSE)
+    rank_dat = qr_dat$rank
+    keep_dat = qr_dat$pivot[seq_len(rank_dat)]
+    dat = dat[, keep_dat, drop=FALSE]
     tmp = cor(dat)
     tmp[upper.tri(tmp)] = 0
     diag(tmp) = 0
@@ -189,13 +223,15 @@
 }
 
 # Estimate output from sbwaux
-.estimate.sbwaux = function(object, digits = 2, ...) {
+.estimate.sbwaux = function(object, out = NULL, digits, ...) {
   if (class(object) != "sbwaux") {
     warning("Object not of class \"sbwaux\"")
     return(invisible(NULL))
   }
   if (object$par$par_est == "aux") {
-    out = object$out
+    if (is.null(out)) {
+      out = object$out
+    }
     # if (is.null(out)) {stop("argument \"out\" is missing in the function \"sbw\".")}
     dat = object$dat_weights
     if (sum(1 - is.na(match(out, colnames(dat)))) == 0) {
@@ -209,11 +245,17 @@
       }
       dat[fac_ind] = NULL
     }
-    weights = dat$weights
+    weights = dat$sbw_weights
     n = length(weights)
     Y = as.matrix(dat[, out])
     dat = dat[, object$bal$bal_cov[!(object$bal$bal_cov %in% names(which(fac_ind == TRUE)))]]
     dat = as.matrix(dat)
+    
+    # remove collinear columns
+    qr_dat = qr(dat, tol = 1e-9, LAPACK = FALSE)
+    rank_dat = qr_dat$rank
+    keep_dat = qr_dat$pivot[seq_len(rank_dat)]
+    dat = dat[, keep_dat, drop=FALSE]
     tmp = cor(dat)
     tmp[upper.tri(tmp)] = 0
     diag(tmp) = 0
@@ -244,19 +286,23 @@
 #' @description Function for estimating causal contrasts and population means using the output from \code{\link[sbw]{sbw}}.
 #'
 #' @param object an object from function \code{\link[sbw]{sbw}}.
-#' @param digits a scalar with the number of significant digits used to display the estimates. The default is 6.
-#' @param ... ignored arguments
+#' @param out outcome, a vector of strings with the names of the outcome variables. The default is the \code{out} argument from the \code{object}.
+#' @param digits a scalar with the number of significant digits used to display the estimates. The default is \code{6}.
+#' @param ... ignored arguments.
+#' 
+#' @return An estimate for the estimand of interest. 
+#' The standard error is calculated by robust sandwich variance estimator.
 #' 
 #' @examples 
-#' # Please see the examples in sbw.
+#' # Please see the examples in the function sbw below.
 #' @export
 #' 
-estimate = function(object, digits = 6, ...) {
+estimate = function(object, out = NULL, digits = 6, ...) {
   if (class(object) == "sbwcau") {
-    .estimate.sbwcau(object, digits = digits, ...)
+    .estimate.sbwcau(object, out = out, digits = digits, ...)
   } else if (class(object) == "sbwpop") {
-    .estimate.sbwpop(object, digits = digits, ...)
+    .estimate.sbwpop(object, out = out, digits = digits, ...)
   } else if (class(object) == "sbwaux") {
-    .estimate.sbwaux(object, digits = digits, ...)
+    .estimate.sbwaux(object, out = out, digits = digits, ...)
   } else stop("Please use one of the calls from sbw.")
 }

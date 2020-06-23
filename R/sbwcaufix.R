@@ -39,60 +39,64 @@
   if (par$par_est %in% c("ate", "cate")) {
     # Calculate target
     bal$bal_tar = colMeans(as.matrix(dat[, bal$bal_cov]))
-    sbwfix_level = lapply(dat_level, .sbwauxfix, bal = bal, wei = wei, sol = sol)
+    sd_target = apply(as.matrix(dat[, bal$bal_cov]), 2, sd)
+    sbwfix_level = lapply(dat_level, .sbwauxfix, bal = bal, wei = wei, sol = sol, sd_target = sd_target)
     # Get weights
-    weights = lapply(sbwfix_level, function(x) x$dat_weights$weights)
+    weights = lapply(sbwfix_level, function(x) x$dat_weights$sbw_weights)
     # Calculate effective sample size
-    eff_size = lapply(weights, function(x) sum(x)^2/sum(x^2))
+    effective_sample_size = lapply(weights, function(x) sum(x)^2/sum(x^2))
     # Update the outputs
     weights = unlist(weights)
-    obj_total = lapply(sbwfix_level, function(x) x$obj_total)
+    objective_value = lapply(sbwfix_level, function(x) x$objective_value)
     time = lapply(sbwfix_level, function(x) x$time)
     status = lapply(sbwfix_level, function(x) x$status)
-    dual_table = lapply(sbwfix_level, function(x) x$dual_table)
-    target = lapply(sbwfix_level, function(x) x$target)
+    shadow_price = lapply(sbwfix_level, function(x) x$shadow_price)
+    balance_parameters = lapply(sbwfix_level, function(x) x$balance_parameters)
   } else if (par$par_est %in% c("att", "atc", "pop")) {
     if (par$par_est %in% "att") {
       # Calculate target
       bal$bal_tar = colMeans(as.matrix(dat[which(dat[, ind] == 1), bal$bal_cov]))
-      sbwfix_level = .sbwauxfix(dat_level[[1]], bal = bal, wei = wei, sol = sol)
+      sd_target = apply(as.matrix(dat[which(dat[, ind] == 1), bal$bal_cov]), 2, sd)
+      sbwfix_level = .sbwauxfix(dat_level[[1]], bal = bal, wei = wei, sol = sol, sd_target = sd_target)
       # Get weights
-      weights = sbwfix_level$dat_weights$weights
+      weights = sbwfix_level$dat_weights$sbw_weights
       # Calculate effective sample size
-      eff_size = sum(weights)^2/sum(weights^2)
+      effective_sample_size = sum(weights)^2/sum(weights^2)
       # Update the data frame
       weights = c(weights, rep(1/(nrow(dat) - length(weights)), nrow(dat) - length(weights)))
     } else if (par$par_est %in% "atc") {
       bal$bal_tar = colMeans(as.matrix(dat[which(dat[, ind] == 0), bal$bal_cov]))
-      sbwfix_level = .sbwauxfix(dat_level[[2]], bal = bal, wei = wei, sol = sol)
+      sd_target = apply(as.matrix(dat[which(dat[, ind] == 0), bal$bal_cov]), 2, sd)
+      sbwfix_level = .sbwauxfix(dat_level[[2]], bal = bal, wei = wei, sol = sol, sd_target = sd_target)
       # Get weights
-      weights = sbwfix_level$dat_weights$weights
+      weights = sbwfix_level$dat_weights$sbw_weights
       # Calculate effective sample size
-      eff_size = sum(weights)^2/sum(weights^2)
+      effective_sample_size = sum(weights)^2/sum(weights^2)
       # Update the data frame
       weights = c(rep(1/(nrow(dat) - length(weights)), nrow(dat) - length(weights)), weights)
     } else if (par$par_est %in% "pop") {
-      sbwfix_level = .sbwauxfix(dat_level[[1]], bal = bal, wei = wei, sol = sol)
+      sd_target = apply(as.matrix(dat[, bal$bal_cov]), 2, sd)
+      sbwfix_level = .sbwauxfix(dat_level[[1]], bal = bal, wei = wei, sol = sol, sd_target = sd_target)
       # Get weights
-      weights = sbwfix_level$dat_weights$weights
+      weights = sbwfix_level$dat_weights$sbw_weights
       # Calculate effective sample size
-      eff_size = sum(weights)^2/sum(weights^2)
+      effective_sample_size = sum(weights)^2/sum(weights^2)
       # Update the data frame
       weights = c(weights, rep(0, nrow(dat) - length(weights)))
     }
     # Update the outputs
-    obj_total = sbwfix_level$obj_total
+    objective_value = sbwfix_level$objective_value
     time = sbwfix_level$time
     status = sbwfix_level$status
-    dual_table = sbwfix_level$dual_table
-    target = sbwfix_level$target
+    shadow_price = sbwfix_level$shadow_price
+    balance_parameters = sbwfix_level$balance_parameters
   }
   # Update the data frame
   dat_weights = dat
-  dat_weights$weights = weights
+  dat_weights$sbw_weights = weights
   dat_weights = dat_weights[order(ord), ]
   dat_weights[fac_ind] = lapply(dat_weights[fac_ind], function(x) as.factor(x))
   
-  output = list(ind = ind, out = out, bal = bal, obj_total = obj_total, eff_size = eff_size, time = time, status = status, dat_weights = dat_weights, dual_table = dual_table, target = target, par = par)
+  output = list(ind = ind, out = out, bal = bal, objective_value = objective_value, effective_sample_size = effective_sample_size, time = time, status = status, dat_weights = dat_weights, shadow_price = shadow_price, balance_parameters = balance_parameters, par = par)
   return(output)
 }

@@ -27,8 +27,8 @@ the next eight columns are the covariates; the last column is the outcome:
 data(lalonde)
 }
 \description{
-Data set from the National Supported Work Demonstration used by Lalonde (1986) 
-and Dehejia and Wahba (1999) to evaluate propensity score methods. 
+Data set from the National Supported Work Demonstration 
+(Lalonde 1986, Dehejia and Wahba 1999). 
 This data set is publicly available at 
 \url{https://users.nber.org/~rdehejia/data/.nswdata2.html}.
 }

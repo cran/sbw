@@ -15,7 +15,7 @@
   } else {stop("Please input one of \"att\", \"atc\", \"ate\", \"cate\", \"pop\" for argument est.")}
   
   bal$bal_tar = output$bal$bal_tar
-  output = list(ind = ind, out = out, bal = bal, wei = wei, sol = sol, par = par, obj_total = output$obj_total, eff_size = output$eff_size, time = output$time, status = output$status, dat_weights = output$dat_weights, dual_table = output$dual_table, target = output$target)
+  output = list(ind = ind, out = out, bal = bal, wei = wei, sol = sol, par = par, objective_value = output$objective_value, effective_sample_size = output$effective_sample_size, time = output$time, status = output$status, dat_weights = output$dat_weights, shadow_price = output$shadow_price, balance_parameters = output$balance_parameters)
 
   if (est %in% c("att", "atc", "ate", "cate")) {
     class(output) = "sbwcau"

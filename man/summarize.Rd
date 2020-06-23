@@ -2,20 +2,33 @@
 % Please edit documentation in R/summarize.R
 \name{summarize}
 \alias{summarize}
-\title{Visualize output from \code{sbw}}
+\title{Summarize output from \code{sbw}}
 \usage{
 summarize(object, digits = 6, ...)
 }
 \arguments{
 \item{object}{an object from the class \code{sbwcau} or \code{sbwpop} obtained after using \code{\link[sbw]{sbw}}.}
 
-\item{digits}{The number of significant digits that will be displayed. The default is 6.}
+\item{digits}{The number of significant digits that will be displayed. The default is \code{6}.}
 
-\item{...}{ignored arguments}
+\item{...}{ignored arguments.}
+}
+\value{
+A list with the following elements:
+
+\code{variance}{, variance of the weights}
+
+\code{coefficient_variation}{, coefficient of variation of the weights}
+
+\code{effective_sample_size}{, effective sample size}
+
+\code{balance_table}{, mean/TASDM balance tables for samples before/after weighting}
+
+\code{shadow_price}{, dual tables or shadow prices for the balanced groups}
 }
 \description{
 Function for summarizing the output from \code{\link[sbw]{sbw}}.
 }
 \examples{
-# Please see the examples in function sbw.
+# Please see the examples in the function sbw above.
 }

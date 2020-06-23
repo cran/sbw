@@ -1,21 +1,21 @@
 # Plot output from sbwaux
-.plot.sbwaux = function(x, plot_cov, ...) {
+.plot.sbwaux = function(x, plot_cov, ask, ...) {
   if (class(x) != "sbwaux") {
     warning("Object not of class \"sbwaux\"")
     return(invisible(NULL))
   }
   object = x
-  weights = object$dat_weights$weights
-  object$dat_weights$weights = NULL
+  weights = object$dat_weights$sbw_weights
+  object$dat_weights$sbw_weights = NULL
 
-  par(ask = TRUE)
+  par(ask = ask)
   boxplot(weights, main = "Distribution of the weights")
 
   dat = object$dat_weights
   fac_ind = sapply(dat, is.factor)
   dat[fac_ind] = lapply(dat[fac_ind], function(x) as.numeric(as.character(x)))
-  bal_tar = object$target$bal_tar
-  bal_tol = object$target$bal_tol
+  bal_tar = object$balance_parameters$bal_tar
+  bal_tol = object$balance_parameters$bal_tol
   bal_cov = names(bal_tar)
   if (!is.null(plot_cov)) {
     temp = match(plot_cov, bal_cov)
@@ -46,14 +46,14 @@
     legend("topright", c("Before", "After", "Target", expression(T %+-% tol)),
            col=c("gray48", "gray48", "black", "black"),
            lty = c(3, 1, 4, 2), lwd = 1, cex = 0.75)
-    par(ask=T)
+    par(ask = ask)
   }
-  par(ask = F)
+  par(ask = FALSE)
 }
 
 
 # Plot output from sbwcau
-.plot.sbwcau = function(x, plot_cov, ...) {
+.plot.sbwcau = function(x, plot_cov, ask, ...) {
   if (class(x) != "sbwcau") {
     warning("Object not of class \"sbwcau\"")
     return(invisible(NULL))
@@ -61,12 +61,12 @@
   object = x
   ind = object$ind
   tre_ind = object$dat_weights[, ind]
-  weights0 = object$dat_weights$weights*(1 - as.numeric(as.character(object$dat_weights[, ind])))
-  weights1 = object$dat_weights$weights*as.numeric(as.character(object$dat_weights[, ind]))
+  weights0 = object$dat_weights$sbw_weights*(1 - as.numeric(as.character(object$dat_weights[, ind])))
+  weights1 = object$dat_weights$sbw_weights*as.numeric(as.character(object$dat_weights[, ind]))
 
-  object$dat_weights$weights = NULL
+  object$dat_weights$sbw_weights = NULL
 
-  par(ask = TRUE)
+  par(ask = ask)
   par(mfrow=c(1, 2))
   boxplot(weights1[tre_ind == 1], main = "Weights in the treated sample")
   boxplot(weights0[tre_ind == 0], main = "Weights in the control sample")
@@ -79,19 +79,19 @@
   bal_cov = bal$bal_cov
   
   if (object$par$par_est %in% c("ate", "cate")) {
-    bal_tar0 = object$target[[1]]$bal_tar
-    bal_tol0 = object$target[[1]]$bal_tol
-    bal_tar1 = object$target[[2]]$bal_tar
-    bal_tol1 = object$target[[2]]$bal_tol
+    bal_tar0 = object$balance_parameters[[1]]$bal_tar
+    bal_tol0 = object$balance_parameters[[1]]$bal_tol
+    bal_tar1 = object$balance_parameters[[2]]$bal_tar
+    bal_tol1 = object$balance_parameters[[2]]$bal_tol
   } else if (object$par$par_est == "att") {
-    bal_tar0 = object$target$bal_tar
-    bal_tol0 = object$target$bal_tol
-    bal_tar1 = object$target$bal_tar
+    bal_tar0 = object$balance_parameters$bal_tar
+    bal_tol0 = object$balance_parameters$bal_tol
+    bal_tar1 = object$balance_parameters$bal_tar
     bal_tol1 = rep(0, length(bal_tar1))
   } else if (object$par$par_est == "atc") {
-    bal_tar1 = object$target$bal_tar
-    bal_tol1 = object$target$bal_tol
-    bal_tar0 = object$target$bal_tar
+    bal_tar1 = object$balance_parameters$bal_tar
+    bal_tol1 = object$balance_parameters$bal_tol
+    bal_tar0 = object$balance_parameters$bal_tar
     bal_tol0 = rep(0, length(bal_tar0))
   }
   
@@ -147,7 +147,7 @@
            col=c("gray48", "gray48", "black", "black"),
            lty = c(3, 1, 4, 2),
            lwd = c(1, 1, 1, 1), cex = 0.5)
-    par(ask=TRUE)
+    par(ask = ask)
     par(mfrow=c(1, 1))
   }
   par(ask = FALSE)
@@ -155,7 +155,7 @@
 }
 
 # Plot output from sbwpop
-.plot.sbwpop = function(x, plot_cov, ...) {
+.plot.sbwpop = function(x, plot_cov, ask, ...) {
   if (class(x) != "sbwpop") {
     warning("Object not of class \"sbwpop\"")
     return(invisible(NULL))
@@ -164,17 +164,17 @@
   ind = object$ind
   tre_ind = object$dat_weights[, ind]
   
-  weights0 = object$dat_weights$weights
-  object$dat_weights$weights = NULL
+  weights0 = object$dat_weights$sbw_weights
+  object$dat_weights$sbw_weights = NULL
 
-  par(ask = TRUE)
+  par(ask = ask)
   boxplot(weights0[tre_ind == 0], main = "Weights in the complete sample")
 
   dat = object$dat_weights
   fac_ind = sapply(dat, is.factor)
   dat[fac_ind] = lapply(dat[fac_ind], function(x) as.numeric(as.character(x)))
-  bal_tar0 = object$target$bal_tar
-  bal_tol0 = object$target$bal_tol
+  bal_tar0 = object$balance_parameters$bal_tar
+  bal_tol0 = object$balance_parameters$bal_tol
 
   bal_cov = bal$bal_cov
   
@@ -208,7 +208,7 @@
            col=c("gray48", "gray48", "black", "black"),
            lty = c(3, 1, 4, 2),
            lwd = c(1, 1, 1, 1), cex = 0.75)
-    par(ask = TRUE)
+    par(ask = ask)
   }
   par(ask = FALSE)
 }
@@ -219,21 +219,22 @@
 #'
 #' @param object an object from function \code{\link[sbw]{sbw}}.
 #' @param plot_cov names of covariates for which balance is to be displayed.  If \code{NULL}, all of the covariates will be displayed.
-#' @param ... ignored
+#' @param ask logical. If \code{TRUE} (and the R session is interactive) the user is asked for input, before a new figure is drawn.
+#' @param ... ignored arguments.
 #' 
 #' @importFrom spatstat unnormdensity
 #' 
 #' @examples 
-#' # Please see the examples in \code{sbw}.
+#' # Please see the examples in the function sbw above.
 #' @export
 #' 
-visualize = function(object, plot_cov, ...) {
+visualize = function(object, plot_cov, ask = TRUE, ...) {
   if (missing(plot_cov)) plot_cov = NULL
   if (class(object) == "sbwaux") {
-    .plot.sbwaux(x = object, plot_cov = plot_cov, ...)
+    .plot.sbwaux(x = object, plot_cov = plot_cov, ask = ask, ...)
   } else if (class(object) == "sbwcau") {
-    .plot.sbwcau(x = object, plot_cov = plot_cov, ...)
+    .plot.sbwcau(x = object, plot_cov = plot_cov, ask = ask, ...)
   } else if (class(object) == "sbwpop") {
-    .plot.sbwpop(x = object, plot_cov = plot_cov, ...)
+    .plot.sbwpop(x = object, plot_cov = plot_cov, ask = ask, ...)
   } else stop("Please use one of the calls from sbw.")
 }

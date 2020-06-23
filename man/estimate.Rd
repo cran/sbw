@@ -4,18 +4,24 @@
 \alias{estimate}
 \title{Estimate causal contrasts and population means}
 \usage{
-estimate(object, digits = 6, ...)
+estimate(object, out = NULL, digits = 6, ...)
 }
 \arguments{
 \item{object}{an object from function \code{\link[sbw]{sbw}}.}
 
-\item{digits}{a scalar with the number of significant digits used to display the estimates. The default is 6.}
+\item{out}{outcome, a vector of strings with the names of the outcome variables. The default is the \code{out} argument from the \code{object}.}
 
-\item{...}{ignored arguments}
+\item{digits}{a scalar with the number of significant digits used to display the estimates. The default is \code{6}.}
+
+\item{...}{ignored arguments.}
+}
+\value{
+An estimate for the estimand of interest. 
+The standard error is calculated by robust sandwich variance estimator.
 }
 \description{
 Function for estimating causal contrasts and population means using the output from \code{\link[sbw]{sbw}}.
 }
 \examples{
-# Please see the examples in sbw.
+# Please see the examples in the function sbw below.
 }
