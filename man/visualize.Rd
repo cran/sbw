@@ -15,6 +15,9 @@ visualize(object, plot_cov, ask = TRUE, ...)
 
 \item{...}{ignored arguments.}
 }
+\value{
+No return value. The figures will be shown in the Plots window.
+}
 \description{
 Function for visualizing the output from \code{\link[sbw]{sbw}}.
 }

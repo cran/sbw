@@ -54,8 +54,8 @@
 #' \code{list(sol_nam, sol_dis, sol_pog)}, where:
 #' 
 #' \code{sol_nam} solver name, a string equal to either \code{"cplex"}, \code{"gurobi"}, \code{"mosek"}, \code{"pogs"}, or \code{"quadprog"}.
-#' CPLEX, Gurobi and MOSEK are commercial solvers, but free for academic users. 
-#' POGS and QUADPROG are free for all. In our experience, POGS is the fastest solver option
+#' CPLEX, \href{https://www.gurobi.com/documentation/9.1/refman/ins_the_r_package.html}{Gurobi} and MOSEK are commercial solvers, but free for academic users. 
+#' \href{http://foges.github.io/pogs/stp/r}{POGS} and QUADPROG are free for all. In our experience, POGS is the fastest solver option
 #' and able to handle larger datasets, but it can be difficult to install for non-Mac users 
 #' and more difficult to calibrate. MOSEK is more stable than POGS and faster. 
 #' The default option is \code{sol_nam = "quadprog"}. 

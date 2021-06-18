@@ -8,7 +8,6 @@
   if (is.null(out)) {
     out = object$out
   }
-  # if (is.null(out)) {stop("argument \"out\" is missing in the function \"sbw\".")}
   dat = object$dat_weights
   if (sum(1 - is.na(match(out, colnames(dat)))) == 0) {
     stop("Please specify a correct string for out.")
@@ -39,8 +38,8 @@
     dat = dat[,!apply(tmp,2,function(x) any(x > 0.9999))]
      
     var_cau = colMeans(as.matrix((as.matrix(n*weights1*Y - sum(weights1*Y) 
-                        - dat%*%solve(t(weights1*dat)%*%dat)%*%(t(weights1*dat)%*%Y)*(n*weights1 - 1)))[tre_ind == 1,])^2) 
-    + colMeans(as.matrix((as.matrix(n*weights0*Y - sum(weights0*Y)
+                        - dat%*%solve(t(weights1*dat)%*%dat)%*%(t(weights1*dat)%*%Y)*(n*weights1 - 1)))[tre_ind == 1,])^2) + 
+      colMeans(as.matrix((as.matrix(n*weights0*Y - sum(weights0*Y)
                         - dat%*%solve(t(weights0*dat)%*%dat)%*%(t(weights0*dat)%*%Y)*(n*weights0 - 1)))[tre_ind == 1,])^2)
     sd_cau = sqrt(var_cau/n)
   }
@@ -67,8 +66,8 @@
     dat = dat[,!apply(tmp,2,function(x) any(x > 0.9999))]
     
     var_cau = colMeans(as.matrix((as.matrix(n*weights1*Y - sum(weights1*Y) 
-                        - dat%*%solve(t(weights1*dat)%*%dat)%*%(t(weights1*dat)%*%Y)*(n*weights1 - 1)))[tre_ind == 0,])^2)
-    +  colMeans(as.matrix((as.matrix(n*weights0*Y - sum(weights0*Y) 
+                        - dat%*%solve(t(weights1*dat)%*%dat)%*%(t(weights1*dat)%*%Y)*(n*weights1 - 1)))[tre_ind == 0,])^2) + 
+      colMeans(as.matrix((as.matrix(n*weights0*Y - sum(weights0*Y) 
                         - dat%*%solve(t(weights0*dat)%*%dat)%*%(t(weights0*dat)%*%Y)*(n*weights0 - 1)))[tre_ind == 0,])^2)
     sd_cau = sqrt(var_cau/n)
   }
@@ -95,8 +94,8 @@
     dat = dat[,!apply(tmp,2,function(x) any(x > 0.9999))]
     
     var_cau = colMeans((as.matrix(n*weights1*Y - sum(weights1*Y) 
-                   - dat%*%solve(t(weights1*dat)%*%dat)%*%(t(weights1*dat)%*%Y)*(n*weights1 - 1)))^2)
-            + colMeans((as.matrix(n*weights0*Y - sum(weights0*Y) 
+                   - dat%*%solve(t(weights1*dat)%*%dat)%*%(t(weights1*dat)%*%Y)*(n*weights1 - 1)))^2) + 
+      colMeans((as.matrix(n*weights0*Y - sum(weights0*Y) 
                    - dat%*%solve(t(weights0*dat)%*%dat)%*%(t(weights0*dat)%*%Y)*(n*weights0 - 1)))^2)
     sd_cau = sqrt(var_cau/n)
   }
@@ -132,8 +131,8 @@
     dat = dat[,!apply(tmp,2,function(x) any(x > 0.9999))]
     
     var_cau = colMeans((as.matrix(n*weights1*Y - sum(weights1*Y) 
-                    - dat%*%solve(t(weights1*dat)%*%dat)%*%(t(weights1*dat)%*%Y)*(n*weights1 - 1)))^2)
-            + colMeans((as.matrix(n*weights0*Y - sum(weights0*Y) 
+                    - dat%*%solve(t(weights1*dat)%*%dat)%*%(t(weights1*dat)%*%Y)*(n*weights1 - 1)))^2) + 
+      colMeans((as.matrix(n*weights0*Y - sum(weights0*Y) 
                     - dat%*%solve(t(weights0*dat)%*%dat)%*%(t(weights0*dat)%*%Y)*(n*weights0 - 1)))^2)
     sd_cau = sqrt(var_cau/n)
   }
@@ -165,7 +164,6 @@
     if (is.null(out)) {
       out = object$out
     }
-    # if (is.null(out)) {stop("argument \"out\" is missing in the function \"sbw\".")}
     dat = object$dat_weights
     if (sum(1 - is.na(match(out, colnames(dat)))) == 0) {
       stop("Please specify a correct string for out.")
@@ -232,7 +230,6 @@
     if (is.null(out)) {
       out = object$out
     }
-    # if (is.null(out)) {stop("argument \"out\" is missing in the function \"sbw\".")}
     dat = object$dat_weights
     if (sum(1 - is.na(match(out, colnames(dat)))) == 0) {
       stop("Please specify a correct string for out.")

@@ -13,8 +13,6 @@
   dat = object$dat_weights[,object$bal$bal_cov]
   bal_tar = object$balance_parameters$bal_tar
   bal_tol = object$balance_parameters$bal_tol
-  # bal_cov = names(bal_tar)
-  # bal_std = object$balance_parameters$bal_std
 
   fac_ind = sapply(dat, is.factor)
   dat[fac_ind] = lapply(dat[fac_ind], function(x) as.numeric(as.character(x)))
@@ -129,7 +127,6 @@
   storage.mode(dat) = "numeric"
   colnames(dat) = object$bal$bal_cov
     
-  # bal_cov = bal$bal_cov
   means_b0 = colMeans(dat[tre_ind == 0,,drop=FALSE])
   sds_b0 = apply(dat[tre_ind == 0,,drop=FALSE], 2, sd)
   means_b1 = colMeans(dat[tre_ind == 1,,drop=FALSE])
@@ -275,7 +272,6 @@
   storage.mode(dat) = "numeric"
   colnames(dat) = object$bal$bal_cov
   
-  #bal_cov = bal$bal_cov
   means_b0 = colMeans(dat[tre_ind == 0,,drop=FALSE])
   sds_b0 = apply(dat[tre_ind == 0,,drop=FALSE], 2, sd)
   means_b1 = colMeans(dat)
@@ -380,7 +376,6 @@
 #' @param digits The number of significant digits that will be displayed. The default is \code{6}.
 #' @param ... ignored arguments.
 #' 
-#' @importFrom spatstat unnormdensity
 #' 
 #' @return A list with the following elements:
 #' @return \code{variance}{, variance of the weights}

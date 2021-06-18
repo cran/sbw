@@ -38,7 +38,7 @@
   dat_level = by(dat, dat[, ind], function(x) x)
   if (par$par_est %in% c("ate", "cate")) {
     # Calculate target
-    bal$bal_tar = colMeans(as.matrix(dat[, bal$bal_cov]))
+    if (par$par_est %in% "ate") bal$bal_tar = colMeans(as.matrix(dat[, bal$bal_cov]))
     sd_target = apply(as.matrix(dat[, bal$bal_cov]), 2, sd)
     sbwfix_level = lapply(dat_level, .sbwauxfix, bal = bal, wei = wei, sol = sol, sd_target = sd_target)
     # Get weights
