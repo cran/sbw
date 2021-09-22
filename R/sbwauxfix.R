@@ -61,6 +61,12 @@
       sbw.object = .sbwpripogs(problemparameters.object, params) 
       time = (proc.time()-ptm)[3]
     }
+  } 
+  else if (sol$sol_nam == "osqp") {
+    verbose = as.logical(ifelse(is.null(sol$sol_dis), TRUE, FALSE))
+    ptm = proc.time()
+    sbw.object = .sbwpriosqp(problemparameters.object, verbose = verbose) 
+    time = (proc.time()-ptm)[3]
   }
   else if (sol$sol_nam == "quadprog") {
     if (sum(bal$bal_tol^2) == 0) {

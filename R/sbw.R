@@ -53,7 +53,7 @@
 #' 
 #' \code{list(sol_nam, sol_dis, sol_pog)}, where:
 #' 
-#' \code{sol_nam} solver name, a string equal to either \code{"cplex"}, \code{"gurobi"}, \code{"mosek"}, \code{"pogs"}, or \code{"quadprog"}.
+#' \code{sol_nam} solver name, a string equal to either \code{"cplex"}, \code{"gurobi"}, \code{"mosek"}, \code{"osqp"}, \code{"pogs"}, or \code{"quadprog"}.
 #' CPLEX, \href{https://www.gurobi.com/documentation/9.1/refman/ins_the_r_package.html}{Gurobi} and MOSEK are commercial solvers, but free for academic users. 
 #' \href{http://foges.github.io/pogs/stp/r}{POGS} and QUADPROG are free for all. In our experience, POGS is the fastest solver option
 #' and able to handle larger datasets, but it can be difficult to install for non-Mac users 
@@ -61,7 +61,7 @@
 #' The default option is \code{sol_nam = "quadprog"}. 
 #'
 #' \code{sol_dis} solver display, a logical variable indicating whether the output is to be displayed or not.
-#' The default is \code{FALSE}. This option is specific to \code{"cplex"}, \code{"gurobi"}, \code{"mosek"}, and \code{"pogs"}.
+#' The default is \code{FALSE}. This option is specific to \code{"cplex"}, \code{"gurobi"}, \code{"mosek"}, \code{"pogs"}, and \code{"osqp"}.
 #'
 #' \code{sol_pog} solver options specific to \code{"pogs"}, with the following default parameters:
 #'

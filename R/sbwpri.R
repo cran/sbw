@@ -585,3 +585,95 @@
     
   return(list(objective_value = objective_value, status = status, weights = weights, shadow_price = shadow_price))
 }
+
+
+# solver: osqp
+.sbwpriosqp = function(problemparameters.object, verbose) {
+  normalize = problemparameters.object$normalize
+  nor = problemparameters.object$nor
+  n = problemparameters.object$n
+  Amat = problemparameters.object$Amat
+  bvec = problemparameters.object$bvec
+  cvec = problemparameters.object$cvec
+  lb = problemparameters.object$lb
+  ub = problemparameters.object$ub
+  sense = problemparameters.object$sense
+  rm(problemparameters.object)
+  
+  if (nor == "l_1" | nor == "l_inf") {
+    stop("Minimizing the l_1 or l_inf norm is not a valid option with quadprog. Please use one of cplex, gurobi and mosek.")
+  }
+  if (nor == "l_2") {
+    # The primal problem is
+    # minimize: c'x + 0.5x'Qx
+    # subject to:
+    # 	A x <= b
+    #   (and sum(x) = 1 if normalize = 1)
+    # with bounds:
+    # 	lb <= x <= ub
+    # In the solver osqp, 
+    #   q := c
+    #   A := A
+    #   u := b
+    #   if normalize = 1, meq = 1
+    #   A = (A, 1)
+    #   u = (bvec, 1)
+    #   l = (-Inf, 1)
+    # For l_2 norm,
+    #   c = 0
+    #   P = 2*(diag(n) - 1/n)
+    P = 2*(diag(n) - 1/n)
+    q = cvec
+    A = Amat
+    l = rep_len(-Inf, length(bvec))
+    u = bvec
+    
+    if (normalize == 1) {
+      l[length(l)] = 1
+    } 
+    
+    if (lb[1] == 0) {
+      # Add the non-negativity constraints
+      A = rbind(as.matrix(A), diag(n))
+      u = c(u, rep_len(Inf, n))
+      l = c(l, rep_len(0., n))
+    } else {
+      A = rbind(as.matrix(A), diag(n))
+      u = c(u, rep_len(Inf, n))
+      l = c(l, rep_len(-Inf, n))
+    }
+    
+    P = Matrix::Matrix(P, sparse = TRUE)
+    # A = as.matrix(A)
+    
+    cat(format("  osqp optimizer is opening..."), "\n")
+    cat(format("  Finding the optimal weights..."), "\n")
+    # eps_prim_inf = as.double(10^(-ceiling(log10(n)))*1e-20)
+    out = osqp::solve_osqp(P = P, q = q, A = A, l = l, u = u, 
+                           pars = osqp::osqpSettings(eps_prim_inf = 1e-32, eps_dual_inf = 1e-32, alpha = 1, polish = TRUE))
+  }
+  # Get status code
+  status = out$info$status
+  # Get weights
+  weights = (out$x)[1:n]
+  if (lb[1] == 0 & min(weights, na.rm = TRUE) < 0) {
+    weights[weights < 0] = 0
+  }
+  if (normalize == 1) {
+    weights = weights/sum(weights)
+  }
+  # Get objective
+  objective_value = var(weights)*(n-1)
+  if (is.na(objective_value) | is.nan(objective_value)| is.null(objective_value)) {
+    cat(format("  Optimal weights not found."), "\n")
+  } else cat(format("  Optimal weights found."), "\n")
+  # Get dual table
+  dual_vars = out$y[1:sum(sense == "L")]
+  dual_names = names(bvec)[names(bvec) != ""]
+  if (!is.null(dual_vars)) {
+    names(dual_vars) = dual_names
+    shadow_price  = .dualtable(dual_vars)
+  } else shadow_price = NULL
+  
+  return(list(objective_value = objective_value, status = status, weights = weights, shadow_price = shadow_price))
+}  
