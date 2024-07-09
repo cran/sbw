@@ -54,7 +54,7 @@
 #' \code{list(sol_nam, sol_dis, sol_pog)}, where:
 #' 
 #' \code{sol_nam} solver name, a string equal to either \code{"cplex"}, \code{"gurobi"}, \code{"mosek"}, \code{"osqp"}, \code{"pogs"}, or \code{"quadprog"}.
-#' CPLEX, \href{https://www.gurobi.com/documentation/9.1/refman/ins_the_r_package.html}{Gurobi} and MOSEK are commercial solvers, but free for academic users. 
+#' CPLEX, \href{https://www.gurobi.com/documentation/current/refman/r_ins_the_r_package.html}{Gurobi} and MOSEK are commercial solvers, but free for academic users. 
 #' \href{http://foges.github.io/pogs/stp/r}{POGS} and QUADPROG are free for all. In our experience, POGS is the fastest solver option
 #' and able to handle larger datasets, but it can be difficult to install for non-Mac users 
 #' and more difficult to calibrate. MOSEK is more stable than POGS and faster. 
@@ -87,39 +87,41 @@
 #' It specifies the targeted population for inference in terms of the observed covariates 
 #' when \code{par_est = "cate"}, \code{"pop"} or \code{"aux"}. Please see the examples. 
 #' 
+#' @param mes a logical variable indicating whether the messages are printed.
+#' 
 #' @import quadprog slam
 #' @importFrom MASS mvrnorm
 #' @importFrom Matrix sparseMatrix Diagonal bdiag t
 #' 
 #' @return A list with the following elements:
-#' @return \code{dat_weights}{, a data frame with the optimal weights } \code{dat_weights$sbw_weights} {;}
-#' @return \code{ind}{, an argument provided by the user;}
-#' @return \code{out}{, an argument provided by the user;}
-#' @return \code{bal}{, an argument provided by the user;}
-#' @return \code{wei}{, an argument provided by the user;}
-#' @return \code{sol}{, an argument provided by the user;}
-#' @return \code{par}{, an argument provided by the user;}
-#' @return \code{effective_sample_size}{, effective sample size/sizes for the weighted group/groups;}
-#' @return \code{objective_value}{, value/values of the objective function/functions at the optimum;}
-#' @return \code{status}{, status of the solution. If the optimal weights are found,} \code{status = optimal};
-#' { otherwise, the solution may be not optimal or not exist, in which case an error will be returned with details specific to the solver used.}
-#' { For the solver "quadprog", the status code is missing, therefore, } \code{status = NA} {;}
-#' @return \code{time}{, time elapsed to find the optimal solution;}
-#' @return \code{shadow_price}{, dual variables or shadow prices of the covariate balance constraints;}
-#' @return \code{balance_parameters}{, details of the balance parameters;}
-#' @return \code{cstat}{, covariate balance statistic used in Wang and Zubizarreta (2020).}
-#' {A magnitude to be minimized to select the degree of approximate balance in } \code{bal$bal_gri} {.}
+#' @return \code{dat_weights}, a data frame with the optimal weights \code{dat_weights$sbw_weights};
+#' @return \code{ind}, an argument provided by the user;
+#' @return \code{out}, an argument provided by the user;
+#' @return \code{bal}, an argument provided by the user;
+#' @return \code{wei}, an argument provided by the user;
+#' @return \code{sol}, an argument provided by the user;
+#' @return \code{par}, an argument provided by the user;
+#' @return \code{effective_sample_size}, effective sample size/sizes for the weighted group/groups;
+#' @return \code{objective_value}, value/values of the objective function/functions at the optimum;
+#' @return \code{status}, status of the solution. If the optimal weights are found, \code{status = optimal};
+#' otherwise, the solution may be not optimal or not exist, in which case an error will be returned with details specific to the solver used.
+#' For the solver "quadprog", the status code is missing, therefore, \code{status = NA};
+#' @return \code{time}, time elapsed to find the optimal solution;
+#' @return \code{shadow_price}, dual variables or shadow prices of the covariate balance constraints;
+#' @return \code{balance_parameters}, details of the balance parameters;
+#' @return \code{cstat}, covariate balance statistic used in Wang and Zubizarreta (2020).
+#' A magnitude to be minimized to select the degree of approximate balance in \code{bal$bal_gri}.
 #' 
 #' @source{\url{https://www.ibm.com/products/ilog-cplex-optimization-studio}} 
 #' @source{\url{https://www.gurobi.com/products/gurobi-optimizer/}}
 #' @source{\url{https://www.mosek.com/products/mosek/}} 
 #' @source{\url{http://foges.github.io/pogs/stp/r}} 
 #' 
-#' @references Chattopadhyay, A., Hase, C. H., and Zubizarreta, J. R. (2020), "Balancing Versus Modeling Approaches to Weighting in Practice," Statistics in Medicine, in press.
-#' @references Kang, J. D. Y., and Schafer, J. L. (2007), "Demistifying Double Robustness: A Comparison of Alternative Strategies for Estimating a Population Mean from Incomplete Data," Statistical Science, 22, 523-539.
+#' @references Chattopadhyay, A., Hase, C. H., and Zubizarreta, J. R. (2020), "Balancing Versus Modeling Approaches to Weighting in Practice," \emph{Statistics in Medicine}, 39, 3227-3254.
+#' @references Kang, J. D. Y., and Schafer, J. L. (2007), "Demystifying Double Robustness: A Comparison of Alternative Strategies for Estimating a Population Mean from Incomplete Data," \emph{Statistical Science}, 22, 523-539.
 #' @references Stuart, E. A. Matching methods for causal inference: a review and a look forward. Statistical Science 2010; 25(1): 1-21.
-#' @references Wang, Y., and Zubizarreta, J. R. (2020), "Minimal Dispersion Approximately Balancing Weights: Asymtotic Properties and Practical Considerations," Biometrika, 107, 93-105.
-#' @references Zubizarreta, J. R. (2015), "Stable Weights that Balance Covariates for Estimation with Incomplete Outcome Data," Journal of the American Statistical Association, 110, 910-922.
+#' @references Wang, Y., and Zubizarreta, J. R. (2020), "Minimal Dispersion Approximately Balancing Weights: Asymptotic Properties and Practical Considerations," \emph{Biometrika}, 107, 93-105.
+#' @references Zubizarreta, J. R. (2015), "Stable Weights that Balance Covariates for Estimation with Incomplete Outcome Data," \emph{Journal of the American Statistical Association}, 110, 910-922.
 #' 
 #' @examples
 #' # Simulate data
@@ -213,7 +215,7 @@
 #' 
 #' @export
 #'
-sbw = function(dat, ind = NULL, out = NULL, bal = list(bal_cov, bal_alg = TRUE, bal_tol, bal_std = "group", bal_gri = c(0.0001, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1), bal_sam = 1000), wei = list(wei_sum = TRUE, wei_pos = TRUE), sol = list(sol_nam = "quadprog", sol_dis = FALSE), par = list(par_est = "att", par_tar = NULL)) {
+sbw = function(dat, ind = NULL, out = NULL, bal = list(bal_cov, bal_alg = TRUE, bal_tol, bal_std = "group", bal_gri = c(0.0001, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1), bal_sam = 1000), wei = list(wei_sum = TRUE, wei_pos = TRUE), sol = list(sol_nam = "quadprog", sol_dis = FALSE), par = list(par_est = "att", par_tar = NULL), mes = TRUE) {
   if (is.null(bal$bal_alg)) {
     bal$bal_alg = TRUE
   } else if (!is.logical(bal$bal_alg)) {
@@ -251,10 +253,14 @@ sbw = function(dat, ind = NULL, out = NULL, bal = list(bal_cov, bal_alg = TRUE, 
   
   if (!par$par_est %in% c("aux")) {
     if (bal$bal_alg == FALSE) {
-      object = .sbwfix(dat = dat, ind = ind, out = out, bal = bal, wei = wei, sol = sol, par = par)
+      if (mes == FALSE) {
+        invisible(capture.output(object <- .sbwfix(dat = dat, ind = ind, out = out, bal = bal, wei = wei, sol = sol, par = par)))
+      } else object = .sbwfix(dat = dat, ind = ind, out = out, bal = bal, wei = wei, sol = sol, par = par)
     } else if (bal$bal_alg == TRUE) {
       bal$bal_tol = bal$bal_gri
-      object = .sbwtun(dat = dat, ind = ind, out = out, bal = bal, wei = wei, sol = sol, par = par)
+      if (mes == FALSE) {
+        invisible(capture.output(object <- .sbwtun(dat = dat, ind = ind, out = out, bal = bal, wei = wei, sol = sol, par = par)))
+      } else object = .sbwtun(dat = dat, ind = ind, out = out, bal = bal, wei = wei, sol = sol, par = par)
     }
   } else if (par$par_est %in% c("aux")) {
     if (bal$bal_std %in% "target") {
@@ -263,10 +269,14 @@ sbw = function(dat, ind = NULL, out = NULL, bal = list(bal_cov, bal_alg = TRUE, 
     sd_target = 0
     if (bal$bal_alg == FALSE) {
       bal$bal_tar = par$par_tar
-      object = .sbwauxfix(dat = dat, bal = bal, wei = wei, sol = sol, sd_target = sd_target)
+      if (mes == FALSE) {
+        invisible(capture.output(object <- .sbwauxfix(dat = dat, bal = bal, wei = wei, sol = sol, sd_target = sd_target)))
+      } else object = .sbwauxfix(dat = dat, bal = bal, wei = wei, sol = sol, sd_target = sd_target)
     } else if (bal$bal_alg == TRUE) {
       bal$bal_tar = par$par_tar
-      object = .sbwauxtun(dat = dat, bal = bal, wei = wei, sol = sol, sd_target = sd_target)
+      if (mes == FALSE) {
+        invisible(capture.output(object <- .sbwauxtun(dat = dat, bal = bal, wei = wei, sol = sol, sd_target = sd_target)))
+      } else object = .sbwauxtun(dat = dat, bal = bal, wei = wei, sol = sol, sd_target = sd_target)
     }
     object$ind = ind
     object$out = out

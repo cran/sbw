@@ -47,7 +47,7 @@
       f = list(h = c(pogs::kIndLe0(nbL), pogs::kIndEq0(meq)), b = bvec, a = 1, c = 1, d = 0, e = 0)
       # for positive weights and l2 norm penalty
       g = list(h = pogs::kIndGe0(), c = 1, a = 1, d = 0, e = 1)
-      cat(format("  POGS optimizer is opening..."), "\n")
+      cat(format("  POGS optimizer is open..."), "\n")
       cat(format("  Finding the optimal weights..."), "\n")
       out = pogs::pogs(Amat, f, g, params = params)
     } else {
@@ -76,7 +76,7 @@
       # if (lb[1] == -Inf) {
       #   g = list(h = pogs::kZero(), c = 1, a = 1, d = 0, e = 1)
       # }
-      cat(format("  POGS optimizer is opening..."), "\n")
+      cat(format("  POGS optimizer is open..."), "\n")
       cat(format("  Finding the optimal weights..."), "\n")
       out = pogs::pogs(Amat2, f, g, params = params)
     }
@@ -120,7 +120,7 @@
   var_type = problemparameters.object$var_type
   rm(problemparameters.object)
   
-  cat(format("  CPLEX optimizer is opening..."), "\n")
+  cat(format("  CPLEX optimizer is open..."), "\n")
   cat(format("  Finding the optimal weights..."), "\n")
   if (nor == "l_1" | nor == "l_inf") {
     out = Rcplex::Rcplex(cvec, Amat, bvec, lb = lb, ub = ub, sense = sense, vtype = var_type, n = 1, control = list(trace = trace))
@@ -251,7 +251,7 @@
     Amat4 = -t(Amat2)
     bvec4 = -bvec2
 
-    cat(format("  quadprog optimizer is opening..."), "\n")
+    cat(format("  quadprog optimizer is open..."), "\n")
     cat(format("  Finding the optimal weights..."), "\n")
     out = quadprog::solve.QP(Dmat, dvec = cvec, Amat4, bvec4, meq = 1)
   }
@@ -335,7 +335,7 @@
       # ci0 = c(ci0, rep(0, n))
     # }
     
-    # cat(format("  quadprogpp optimizer is opening..."), "\n")
+    # cat(format("  quadprogpp optimizer is open..."), "\n")
     # cat(format("  Finding the optimal weights..."), "\n")
     # out = quadprogpp::QP.Solve(G, g0, CI, ci0, CE, ce0)
   # }
@@ -400,7 +400,7 @@
   model$lb = lb
   model$ub = ub
     
-  cat(format("  Gurobi optimizer is opening..."), "\n")
+  cat(format("  Gurobi optimizer is open..."), "\n")
   cat(format("  Finding the optimal weights..."), "\n")
   if (nor == "l_1" | nor == "l_inf") {
     out = gurobi::gurobi(model, params)
@@ -501,7 +501,7 @@
     # Specify the bounds of the variables
     mos$bx = rbind(blx = lb,
                    bux = ub)
-    cat(format("  Mosek optimizer is opening..."), "\n")
+    cat(format("  Mosek optimizer is open..."), "\n")
     cat(format("  Finding the optimal weights..."), "\n")
     out = Rmosek::mosek(mos, list(verbose = verbose))
   }
@@ -538,7 +538,7 @@
     # Specify the bounds of the variables
     mos$bx = rbind(blx = lb,
                    bux = ub)
-    cat(format("  Mosek optimizer is opening..."), "\n")
+    cat(format("  Mosek optimizer is open..."), "\n")
     cat(format("  Finding the optimal weights..."), "\n")
     out = Rmosek::mosek(mos, list(verbose = verbose))
   }
@@ -601,7 +601,7 @@
   rm(problemparameters.object)
   
   if (nor == "l_1" | nor == "l_inf") {
-    stop("Minimizing the l_1 or l_inf norm is not a valid option with quadprog. Please use one of cplex, gurobi and mosek.")
+    stop("Minimizing the l_1 or l_inf norm is not a valid option with osqp. Please use one of cplex, gurobi and mosek.")
   }
   if (nor == "l_2") {
     # The primal problem is
@@ -622,35 +622,34 @@
     # For l_2 norm,
     #   c = 0
     #   P = 2*(diag(n) - 1/n)
-    P = 2*(diag(n) - 1/n)
+    
     q = cvec
-    A = Amat
     l = rep_len(-Inf, length(bvec))
     u = bvec
     
     if (normalize == 1) {
       l[length(l)] = 1
-    } 
+      P = as(.symDiagonal(n=n, x=1.), "dgCMatrix")
+    } else P = as(.symDiagonal(n=n, x=1.), "dgCMatrix") - 1/n
     
     if (lb[1] == 0) {
       # Add the non-negativity constraints
-      A = rbind(as.matrix(A), diag(n))
+      # use the lower bound and upper bound!
+      Amat = Matrix(rbind(as.matrix(Amat), as(.symDiagonal(n=n, x=1.), "dgCMatrix")), sparse = TRUE)
       u = c(u, rep_len(Inf, n))
       l = c(l, rep_len(0., n))
     } else {
-      A = rbind(as.matrix(A), diag(n))
+      Amat = Matrix(rbind(as.matrix(Amat), as(.symDiagonal(n=n, x=1.), "dgCMatrix")), sparse = TRUE)
       u = c(u, rep_len(Inf, n))
       l = c(l, rep_len(-Inf, n))
     }
-    
-    P = Matrix::Matrix(P, sparse = TRUE)
-    # A = as.matrix(A)
-    
-    cat(format("  osqp optimizer is opening..."), "\n")
+    if (verbose == FALSE) {
+      model <- osqp::osqp(P = P, q = q, A = Amat, l = l, u = u, pars = osqp::osqpSettings(eps_prim_inf = 1e-32, eps_dual_inf = 1e-32, alpha = 1, polish = TRUE, verbose = FALSE))
+    } else model <- osqp::osqp(P = P, q = q, A = Amat, l = l, u = u, pars = osqp::osqpSettings(eps_prim_inf = 1e-32, eps_dual_inf = 1e-32, alpha = 1, polish = TRUE, verbose = TRUE))
+
+    cat(format("  osqp optimizer is open..."), "\n")
     cat(format("  Finding the optimal weights..."), "\n")
-    # eps_prim_inf = as.double(10^(-ceiling(log10(n)))*1e-20)
-    out = osqp::solve_osqp(P = P, q = q, A = A, l = l, u = u, 
-                           pars = osqp::osqpSettings(eps_prim_inf = 1e-32, eps_dual_inf = 1e-32, alpha = 1, polish = TRUE))
+    out = model$Solve()
   }
   # Get status code
   status = out$info$status

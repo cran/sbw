@@ -6,7 +6,7 @@
     mis_value = colSums(is.na(dat[, bal$bal_cov]))
     stop(paste(paste(names(which(mis_value != 0)), collapse = ", "), "have missing values."))
   }
-  if (class(par) == "list") {
+  if (is(par, "list")) {
     est = par$par_est
   } else {stop("Please input a list for argument \"par\".")}
   

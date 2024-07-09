@@ -1,6 +1,6 @@
 # Estimate output from sbwcau
 .estimate.sbwcau = function(object, out = NULL, digits, ...) {
-  if (class(object) != "sbwcau") {
+  if (!is(object, "sbwcau")) {
     warning("Object not of class \"sbwcau\"")
     return(invisible(NULL))
   }
@@ -37,9 +37,9 @@
     diag(tmp) = 0
     dat = dat[,!apply(tmp,2,function(x) any(x > 0.9999))]
      
-    var_cau = colMeans(as.matrix((as.matrix(n*weights1*Y - sum(weights1*Y) 
+    var_cau = colMeans(as.matrix((as.matrix(n*weights1*Y - rep(1, length(weights1))%*%(weights1%*%Y) 
                         - dat%*%solve(t(weights1*dat)%*%dat)%*%(t(weights1*dat)%*%Y)*(n*weights1 - 1)))[tre_ind == 1,])^2) + 
-      colMeans(as.matrix((as.matrix(n*weights0*Y - sum(weights0*Y)
+      colMeans(as.matrix((as.matrix(n*weights0*Y - rep(1, length(weights0))%*%(weights0%*%Y)
                         - dat%*%solve(t(weights0*dat)%*%dat)%*%(t(weights0*dat)%*%Y)*(n*weights0 - 1)))[tre_ind == 1,])^2)
     sd_cau = sqrt(var_cau/n)
   }
@@ -65,9 +65,9 @@
     diag(tmp) = 0
     dat = dat[,!apply(tmp,2,function(x) any(x > 0.9999))]
     
-    var_cau = colMeans(as.matrix((as.matrix(n*weights1*Y - sum(weights1*Y) 
+    var_cau = colMeans(as.matrix((as.matrix(n*weights1*Y - rep(1, length(weights1))%*%(weights1%*%Y) 
                         - dat%*%solve(t(weights1*dat)%*%dat)%*%(t(weights1*dat)%*%Y)*(n*weights1 - 1)))[tre_ind == 0,])^2) + 
-      colMeans(as.matrix((as.matrix(n*weights0*Y - sum(weights0*Y) 
+      colMeans(as.matrix((as.matrix(n*weights0*Y - rep(1, length(weights0))%*%(weights0%*%Y) 
                         - dat%*%solve(t(weights0*dat)%*%dat)%*%(t(weights0*dat)%*%Y)*(n*weights0 - 1)))[tre_ind == 0,])^2)
     sd_cau = sqrt(var_cau/n)
   }
@@ -93,17 +93,17 @@
     diag(tmp) = 0
     dat = dat[,!apply(tmp,2,function(x) any(x > 0.9999))]
     
-    var_cau = colMeans((as.matrix(n*weights1*Y - sum(weights1*Y) 
+    var_cau = colMeans((as.matrix(n*weights1*Y - rep(1, length(weights1))%*%(weights1%*%Y) 
                    - dat%*%solve(t(weights1*dat)%*%dat)%*%(t(weights1*dat)%*%Y)*(n*weights1 - 1)))^2) + 
-      colMeans((as.matrix(n*weights0*Y - sum(weights0*Y) 
+      colMeans((as.matrix(n*weights0*Y - rep(1, length(weights0))%*%(weights0%*%Y) 
                    - dat%*%solve(t(weights0*dat)%*%dat)%*%(t(weights0*dat)%*%Y)*(n*weights0 - 1)))^2)
     sd_cau = sqrt(var_cau/n)
   }
   if (object$par$par_est == "cate") {
-    if (class(object$par$par_tar) == "character") {
+    if (is(object$par$par_tar, "character")) {
       dat = subset(dat, eval(parse(text = object$par$par_tar)))
       dat[fac_ind] = NULL
-    } else if (class(object$par$par_tar) == "numeric") {
+    } else if (is(object$par$par_tar, "numeric")) {
       if (sum(fac_ind) >= 1) {
         dat = dat[apply(dat[fac_ind] == object$par$par_tar[match(names(fac_ind), names(object$par$par_tar))][fac_ind], 1, prod, na.rm = TRUE) %in% 1,]
       }
@@ -130,9 +130,9 @@
     diag(tmp) = 0
     dat = dat[,!apply(tmp,2,function(x) any(x > 0.9999))]
     
-    var_cau = colMeans((as.matrix(n*weights1*Y - sum(weights1*Y) 
+    var_cau = colMeans((as.matrix(n*weights1*Y - rep(1, length(weights1))%*%(weights1%*%Y) 
                     - dat%*%solve(t(weights1*dat)%*%dat)%*%(t(weights1*dat)%*%Y)*(n*weights1 - 1)))^2) + 
-      colMeans((as.matrix(n*weights0*Y - sum(weights0*Y) 
+      colMeans((as.matrix(n*weights0*Y - rep(1, length(weights0))%*%(weights0%*%Y) 
                     - dat%*%solve(t(weights0*dat)%*%dat)%*%(t(weights0*dat)%*%Y)*(n*weights0 - 1)))^2)
     sd_cau = sqrt(var_cau/n)
   }
@@ -155,7 +155,7 @@
 
 # Estimate output from sbwpop
 .estimate.sbwpop = function(object, out = NULL, digits, ...) {
-  if (class(object) != "sbwpop") {
+  if (!is(object, "sbwpop")) {
     warning("Object not of class \"sbwpop\"")
     return(invisible(NULL))
   }
@@ -170,10 +170,10 @@
     }
     fac_ind = sapply(dat, is.factor)
     dat[fac_ind] = lapply(dat[fac_ind], function(x) as.numeric(as.character(x)))
-    if (class(object$par$par_tar) == "character") {
+    if (is(object$par$par_tar, "character")) {
       dat = subset(dat, eval(parse(text = object$par$par_tar)))
       dat[fac_ind] = NULL
-    } else if (class(object$par$par_tar) == "numeric") {
+    } else if (is(object$par$par_tar, "numeric")) {
       if (sum(fac_ind) >= 1) {
         dat = dat[apply(dat[fac_ind] == object$par$par_tar[match(names(fac_ind), names(object$par$par_tar))][fac_ind], 1, prod, na.rm = TRUE) %in% 1,]
       }
@@ -200,7 +200,7 @@
     diag(tmp) = 0
     dat = dat[,!apply(tmp,2,function(x) any(x > 0.9999))]
     
-    var_pop = colMeans((as.matrix(n*weights*Y - sum(weights*Y) 
+    var_pop = colMeans((as.matrix(n*weights*Y - rep(1, length(weights))%*%(weights%*%Y) 
                     - dat%*%solve(t(weights*dat)%*%dat)%*%(t(weights*dat)%*%Y)*(n*weights - 1)))^2)
     sd_pop = sqrt(var_pop/n)
   }
@@ -222,7 +222,7 @@
 
 # Estimate output from sbwaux
 .estimate.sbwaux = function(object, out = NULL, digits, ...) {
-  if (class(object) != "sbwaux") {
+  if (!is(object, "sbwaux")) {
     warning("Object not of class \"sbwaux\"")
     return(invisible(NULL))
   }
@@ -236,7 +236,7 @@
     }
     fac_ind = sapply(dat, is.factor)
     dat[fac_ind] = lapply(dat[fac_ind], function(x) as.numeric(as.character(x)))
-    if (class(object$par$par_tar) == "numeric") {
+    if (is(object$par$par_tar, "numeric")) {
       if (sum(fac_ind) >= 1) {
         dat = dat[apply(dat[fac_ind] == object$par$par_tar[match(names(fac_ind), names(object$par$par_tar))][fac_ind], 1, prod, na.rm = TRUE) %in% 1,]
       }
@@ -258,7 +258,7 @@
     diag(tmp) = 0
     dat = dat[,!apply(tmp,2,function(x) any(x > 0.9999))]
     
-    var_aux = colMeans((as.matrix(n*weights*Y - sum(weights*Y) 
+    var_aux = colMeans((as.matrix(n*weights*Y - rep(1, length(weights))%*%(weights%*%Y) 
                                   - dat%*%solve(t(weights*dat)%*%dat)%*%(t(weights*dat)%*%Y)*(n*weights - 1)))^2)
     sd_aux = sqrt(var_aux/n)
   }
@@ -295,11 +295,11 @@
 #' @export
 #' 
 estimate = function(object, out = NULL, digits = 6, ...) {
-  if (class(object) == "sbwcau") {
+  if (is(object, "sbwcau")) {
     .estimate.sbwcau(object, out = out, digits = digits, ...)
-  } else if (class(object) == "sbwpop") {
+  } else if (is(object, "sbwpop")) {
     .estimate.sbwpop(object, out = out, digits = digits, ...)
-  } else if (class(object) == "sbwaux") {
+  } else if (is(object, "sbwaux")) {
     .estimate.sbwaux(object, out = out, digits = digits, ...)
   } else stop("Please use one of the calls from sbw.")
 }

@@ -45,7 +45,7 @@
     }
   }
   else if (sol$sol_nam == "pogs") {
-    if (requireNamespace("pogs", quietly=TRUE)) {
+    if (requireNamespace("pogs", quietly = TRUE)) {
       # Set defaults
       if (sum(bal$bal_tol^2) == 0) {
         warning("Exact balance may not be acquired. Please use the function summarize to check the balance.")
@@ -63,10 +63,12 @@
     }
   } 
   else if (sol$sol_nam == "osqp") {
-    verbose = as.logical(ifelse(is.null(sol$sol_dis), TRUE, FALSE))
-    ptm = proc.time()
-    sbw.object = .sbwpriosqp(problemparameters.object, verbose = verbose) 
-    time = (proc.time()-ptm)[3]
+    if (requireNamespace("osqp", quietly = TRUE)) {
+      verbose = ifelse(is.null(sol$sol_dis), TRUE, as.logical(sol$sol_dis))
+      ptm = proc.time()
+      sbw.object = .sbwpriosqp(problemparameters.object, verbose = verbose) 
+      time = (proc.time()-ptm)[3]
+    }
   }
   else if (sol$sol_nam == "quadprog") {
     if (sum(bal$bal_tol^2) == 0) {
@@ -77,7 +79,7 @@
     time = (proc.time()-ptm)[3]
   }
   else if (sol$sol_nam == "gurobi") {
-    if (requireNamespace("gurobi", quietly=TRUE)) {
+    if (requireNamespace("gurobi", quietly = TRUE)) {
       sol_dis = ifelse(is.null(sol$sol_dis), 0, as.numeric(sol$sol_dis))
       params = list(OutputFlag = sol_dis)
       ptm = proc.time()
@@ -86,7 +88,7 @@
     }
   }
   else if (sol$sol_nam == "mosek") {
-    if (requireNamespace("Rmosek", quietly=TRUE)) {
+    if (requireNamespace("Rmosek", quietly = TRUE)) {
       verbose = ifelse(is.null(sol$sol_dis), 0, as.numeric(paste(as.numeric(sol$sol_dis), 0, sep = "")))
       ptm = proc.time()
       sbw.object = .sbwprimosek(problemparameters.object, verbose = verbose) 

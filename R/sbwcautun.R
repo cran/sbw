@@ -1,5 +1,5 @@
 .sbwcautun = function(dat, ind, out, bal, wei, sol, par) {
-  if (class(dat[, ind]) == "factor") {
+  if (is(dat[, ind], "factor")) {
     dat[, ind] = as.numeric(as.character(dat[, ind]))
   } 
   if (sum(dat[, ind] != 1 & dat[, ind] != 0) > 0)
@@ -11,15 +11,15 @@
   # Preprocess for cate
   if(par$par_est %in% c("cate","pop")) {
     # Calculate target
-    if (class(par$par_tar) == "character") {
+    if (is(par$par_tar, "character")) {
       dat = subset(dat, eval(parse(text = par$par_tar)))
       bal$bal_tar = colMeans(as.matrix(dat[, bal$bal_cov]))
-    } else if (class(par$par_tar) == "numeric") {
+    } else if (is(par$par_tar, "numeric")) {
       if (sum(fac_ind) >= 1) {
         dat = dat[apply(dat[fac_ind] == par$par_tar[match(names(fac_ind), names(par$par_tar))][fac_ind], 1, prod, na.rm = TRUE) %in% 1,]
       }
       bal$bal_tar = par$par_tar
-    } else if (class(par$par_tar) == "NULL") {
+    } else if (is(par$par_tar, "NULL")) {
       bal$bal_tar = colMeans(as.matrix(dat[, bal$bal_cov]))
     }
   } else if (par$par_est == "ate") {

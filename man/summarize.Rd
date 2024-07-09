@@ -16,15 +16,15 @@ summarize(object, digits = 6, ...)
 \value{
 A list with the following elements:
 
-\code{variance}{, variance of the weights}
+\code{variance}, variance of the weights
 
-\code{coefficient_variation}{, coefficient of variation of the weights}
+\code{coefficient_variation}, coefficient of variation of the weights
 
-\code{effective_sample_size}{, effective sample size}
+\code{effective_sample_size}, effective sample size
 
-\code{balance_table}{, mean/TASDM balance tables for samples before/after weighting}
+\code{balance_table}, mean/TASDM balance tables for samples before/after weighting
 
-\code{shadow_price}{, dual tables or shadow prices for the balanced groups}
+\code{shadow_price}, dual tables or shadow prices for the balanced groups
 }
 \description{
 Function for summarizing the output from \code{\link[sbw]{sbw}}.

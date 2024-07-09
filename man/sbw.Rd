@@ -21,7 +21,8 @@ sbw(
     0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1), bal_sam = 1000),
   wei = list(wei_sum = TRUE, wei_pos = TRUE),
   sol = list(sol_nam = "quadprog", sol_dis = FALSE),
-  par = list(par_est = "att", par_tar = NULL)
+  par = list(par_est = "att", par_tar = NULL),
+  mes = TRUE
 )
 }
 \arguments{
@@ -80,7 +81,7 @@ are unconstrained. The default is \code{TRUE} for non-negative weights.  Again, 
 \code{list(sol_nam, sol_dis, sol_pog)}, where:
 
 \code{sol_nam} solver name, a string equal to either \code{"cplex"}, \code{"gurobi"}, \code{"mosek"}, \code{"osqp"}, \code{"pogs"}, or \code{"quadprog"}.
-CPLEX, \href{https://www.gurobi.com/documentation/9.1/refman/ins_the_r_package.html}{Gurobi} and MOSEK are commercial solvers, but free for academic users. 
+CPLEX, \href{https://www.gurobi.com/documentation/current/refman/r_ins_the_r_package.html}{Gurobi} and MOSEK are commercial solvers, but free for academic users. 
 \href{http://foges.github.io/pogs/stp/r}{POGS} and QUADPROG are free for all. In our experience, POGS is the fastest solver option
 and able to handle larger datasets, but it can be difficult to install for non-Mac users 
 and more difficult to calibrate. MOSEK is more stable than POGS and faster. 
@@ -112,40 +113,42 @@ For estimation with incomplete outcome data, a string equal to:
 \code{par_tar} target, a string, or a vector of scalars. 
 It specifies the targeted population for inference in terms of the observed covariates 
 when \code{par_est = "cate"}, \code{"pop"} or \code{"aux"}. Please see the examples.}
+
+\item{mes}{a logical variable indicating whether the messages are printed.}
 }
 \value{
 A list with the following elements:
 
-\code{dat_weights}{, a data frame with the optimal weights } \code{dat_weights$sbw_weights} {;}
+\code{dat_weights}, a data frame with the optimal weights \code{dat_weights$sbw_weights};
 
-\code{ind}{, an argument provided by the user;}
+\code{ind}, an argument provided by the user;
 
-\code{out}{, an argument provided by the user;}
+\code{out}, an argument provided by the user;
 
-\code{bal}{, an argument provided by the user;}
+\code{bal}, an argument provided by the user;
 
-\code{wei}{, an argument provided by the user;}
+\code{wei}, an argument provided by the user;
 
-\code{sol}{, an argument provided by the user;}
+\code{sol}, an argument provided by the user;
 
-\code{par}{, an argument provided by the user;}
+\code{par}, an argument provided by the user;
 
-\code{effective_sample_size}{, effective sample size/sizes for the weighted group/groups;}
+\code{effective_sample_size}, effective sample size/sizes for the weighted group/groups;
 
-\code{objective_value}{, value/values of the objective function/functions at the optimum;}
+\code{objective_value}, value/values of the objective function/functions at the optimum;
 
-\code{status}{, status of the solution. If the optimal weights are found,} \code{status = optimal};
-{ otherwise, the solution may be not optimal or not exist, in which case an error will be returned with details specific to the solver used.}
-{ For the solver "quadprog", the status code is missing, therefore, } \code{status = NA} {;}
+\code{status}, status of the solution. If the optimal weights are found, \code{status = optimal};
+otherwise, the solution may be not optimal or not exist, in which case an error will be returned with details specific to the solver used.
+For the solver "quadprog", the status code is missing, therefore, \code{status = NA};
 
-\code{time}{, time elapsed to find the optimal solution;}
+\code{time}, time elapsed to find the optimal solution;
 
-\code{shadow_price}{, dual variables or shadow prices of the covariate balance constraints;}
+\code{shadow_price}, dual variables or shadow prices of the covariate balance constraints;
 
-\code{balance_parameters}{, details of the balance parameters;}
+\code{balance_parameters}, details of the balance parameters;
 
-\code{cstat}{, covariate balance statistic used in Wang and Zubizarreta (2020).}
-{A magnitude to be minimized to select the degree of approximate balance in } \code{bal$bal_gri} {.}
+\code{cstat}, covariate balance statistic used in Wang and Zubizarreta (2020).
+A magnitude to be minimized to select the degree of approximate balance in \code{bal$bal_gri}.
 }
 \description{
 Function for finding stable weights (that is, weights of minimum variance) that approximately balance the empirical distribution of the observed covariates.
@@ -242,13 +245,13 @@ visualize(sbwatt_object)
 
 }
 \references{
-Chattopadhyay, A., Hase, C. H., and Zubizarreta, J. R. (2020), "Balancing Versus Modeling Approaches to Weighting in Practice," Statistics in Medicine, in press.
+Chattopadhyay, A., Hase, C. H., and Zubizarreta, J. R. (2020), "Balancing Versus Modeling Approaches to Weighting in Practice," \emph{Statistics in Medicine}, 39, 3227-3254.
 
-Kang, J. D. Y., and Schafer, J. L. (2007), "Demistifying Double Robustness: A Comparison of Alternative Strategies for Estimating a Population Mean from Incomplete Data," Statistical Science, 22, 523-539.
+Kang, J. D. Y., and Schafer, J. L. (2007), "Demystifying Double Robustness: A Comparison of Alternative Strategies for Estimating a Population Mean from Incomplete Data," \emph{Statistical Science}, 22, 523-539.
 
 Stuart, E. A. Matching methods for causal inference: a review and a look forward. Statistical Science 2010; 25(1): 1-21.
 
-Wang, Y., and Zubizarreta, J. R. (2020), "Minimal Dispersion Approximately Balancing Weights: Asymtotic Properties and Practical Considerations," Biometrika, 107, 93-105.
+Wang, Y., and Zubizarreta, J. R. (2020), "Minimal Dispersion Approximately Balancing Weights: Asymptotic Properties and Practical Considerations," \emph{Biometrika}, 107, 93-105.
 
-Zubizarreta, J. R. (2015), "Stable Weights that Balance Covariates for Estimation with Incomplete Outcome Data," Journal of the American Statistical Association, 110, 910-922.
+Zubizarreta, J. R. (2015), "Stable Weights that Balance Covariates for Estimation with Incomplete Outcome Data," \emph{Journal of the American Statistical Association}, 110, 910-922.
 }

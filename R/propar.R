@@ -1,14 +1,16 @@
 if(getRversion() >= "2.15.1")
   utils::globalVariables(
-    c("abline", "boxplot", "bal", "bal_cov", "bal_tar0", "bal_tar1", "bal_tol", "cor", "dat_weights", "density",
-      "digits", "shadow_price", "shadow_price0", "shadow_price1", "effective_sample_size", "gri",
-      "lb", "legend", "lines", "objective_value", "par", "plot", "pt", 
+    c(".symDiagonal", "abline", "as", "boxplot", "bal", "bal_cov", "bal_tar0", "bal_tar1", "bal_tol", 
+      "capture.output", "cor", "dat_weights", "density",
+      "digits", "shadow_price", "shadow_price0", "shadow_price1", "effective_sample_size", "gri", "is",
+      "lb", "legend", "lines", "Matrix", "objective_value", "par", "plot", "pt", 
       "Qmat", "qt", "sam", "sd", "segments", "sense", "status",
       "tail", "target", "target0", "target1", "time", "ub",
       "var_type", "var", "weights", "weighted.mean", "..."))
 
 # Translate the balancing problem to an optimization problem and acquire parameters for solvers.
 .problemparameters = function(dat, nor, bal, normalize, w_min, sd_target) {
+  cat(format("  Building the weighting problem..."), "\n")
   # Check bal arguments
   if (length(bal$bal_cov) == 0) {
     stop("bal_cov should not be empty.")

@@ -1,6 +1,6 @@
 # Summarize output from sbwaux
 .summary.sbwaux = function(object, digits, ...) {
-  if (class(object) != "sbwaux") {
+  if (!is(object, "sbwaux")) {
     warning("Object not of class \"sbwaux\".")
     return(invisible(NULL))
   }
@@ -94,7 +94,7 @@
 
 # Summarize output from sbwcau
 .summary.sbwcau = function(object, digits, ...) {
-  if (class(object) != "sbwcau") {
+  if (!is(object, "sbwcau")) {
     warning("Object not of class \"sbwcau\"")
     return(invisible(NULL))
   }
@@ -250,7 +250,7 @@
 
 # Summarize output from sbwpop
 .summary.sbwpop = function(object, digits, ...) {
-  if (class(object) != "sbwpop") {
+  if (!is(object, "sbwpop")) {
     warning("Object not of class \"sbwpop\"")
     return(invisible(NULL))
   }
@@ -378,22 +378,22 @@
 #' 
 #' 
 #' @return A list with the following elements:
-#' @return \code{variance}{, variance of the weights}
-#' @return \code{coefficient_variation}{, coefficient of variation of the weights}
-#' @return \code{effective_sample_size}{, effective sample size}
-#' @return \code{balance_table}{, mean/TASDM balance tables for samples before/after weighting}
-#' @return \code{shadow_price}{, dual tables or shadow prices for the balanced groups}
+#' @return \code{variance}, variance of the weights
+#' @return \code{coefficient_variation}, coefficient of variation of the weights
+#' @return \code{effective_sample_size}, effective sample size
+#' @return \code{balance_table}, mean/TASDM balance tables for samples before/after weighting
+#' @return \code{shadow_price}, dual tables or shadow prices for the balanced groups
 #' 
 #' @examples 
 #' # Please see the examples in the function sbw above.
 #' @export
 #' 
 summarize = function(object, digits = 6, ...) {
-  if (class(object) == "sbwaux") {
+  if (is(object, "sbwaux")) {
     .summary.sbwaux(object, digits = digits, ...)
-  } else if (class(object) == "sbwcau") {
+  } else if (is(object, "sbwcau")) {
     .summary.sbwcau(object, digits = digits, ...)
-  } else if (class(object) == "sbwpop") {
+  } else if (is(object, "sbwpop")) {
     .summary.sbwpop(object, digits = digits, ...)
   } else stop("Please use one of the calls from sbw.")
 }

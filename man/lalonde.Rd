@@ -4,8 +4,9 @@
 \name{lalonde}
 \alias{lalonde}
 \title{The Lalonde data set}
-\format{A data frame with 445 observations, corresponding to 185 treated 
-and 260 control subjects, and 10 variables.  
+\format{
+A data frame with 614 observations, corresponding to 185 treated 
+and 429 control subjects, and 10 variables.  
 The treatment assignment indicator is the first variable of the data frame; 
 the next eight columns are the covariates; the last column is the outcome:
 \describe{
@@ -19,7 +20,8 @@ the next eight columns are the covariates; the last column is the outcome:
       \item{re74}{a covariate, real earnings in 1974}
       \item{re75}{a covariate, real earnings in 1975}
       \item{re78}{the outcome, real earnings in 1978}
-      }}
+      }
+}
 \source{
 {\url{https://users.nber.org/~rdehejia/data/.nswdata2.html}}
 }
