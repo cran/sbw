@@ -1,7 +1,7 @@
 Package: sbw
 Type: Package
-Version: 1.1.8
-Date: 2024-06-27
+Version: 1.1.9
+Date: 2024-07-12
 Title: Stable Balancing Weights for Causal Inference and Missing Data
 Authors@R: c(person("Jose R.", "Zubizarreta", role = c("aut", "cre"),
                      email = "zubizarreta@hcp.med.harvard.edu"),
@@ -23,11 +23,11 @@ RoxygenNote: 7.2.1
 Encoding: UTF-8
 Suggests: knitr, rmarkdown
 NeedsCompilation: no
-Packaged: 2024-07-09 16:07:28 UTC; yige
+Packaged: 2024-07-12 12:02:12 UTC; yige
 Author: Jose R. Zubizarreta [aut, cre],
   Yige Li [aut],
   Kwangho Kim [aut],
   Amine Allouah [ctb],
   Noah Greifer [ctb]
 Repository: CRAN
-Date/Publication: 2024-07-09 21:30:02 UTC
+Date/Publication: 2024-07-27 22:20:06 UTC

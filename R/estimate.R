@@ -141,7 +141,7 @@
   estimates = as.vector(estimates)
   
   cau_table = cbind(estimates, sd_cau, estimates/sd_cau, 
-                    pt(q = abs(estimates/sd_cau), df = n - 1, lower.tail = FALSE),
+                    2*pt(q = abs(estimates/sd_cau), df = n - 1, lower.tail = FALSE),
                     estimates + sd_cau*qt(0.025, n-1),
                     estimates + sd_cau*qt(0.975, n-1))
   rownames(cau_table) = out
@@ -208,7 +208,7 @@
   estimates = crossprod(weights, Y)
   estimates = as.vector(estimates)
   pop_table = cbind(estimates, sd_pop, estimates/sd_pop, 
-                    pt(q = abs(estimates/sd_pop), df = n - 1, lower.tail = FALSE),
+                    2*pt(q = abs(estimates/sd_pop), df = n - 1, lower.tail = FALSE),
                     estimates + sd_pop*qt(0.025, n-1),
                     estimates + sd_pop*qt(0.975, n-1))
   rownames(pop_table) = out
@@ -266,7 +266,7 @@
   estimates = crossprod(weights, Y)
   estimates = as.vector(estimates)
   aux_table = cbind(estimates, sd_aux, estimates/sd_aux, 
-                    pt(q = abs(estimates/sd_aux), df = n - 1, lower.tail = FALSE),
+                    2*pt(q = abs(estimates/sd_aux), df = n - 1, lower.tail = FALSE),
                     estimates + sd_aux*qt(0.025, n-1),
                     estimates + sd_aux*qt(0.975, n-1))
   rownames(aux_table) = out

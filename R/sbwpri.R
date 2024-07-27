@@ -220,9 +220,9 @@
     Dmat = 2*diag(n)
     Amat = as.matrix(Amat)
 
+    meq = sum(sense == "E")
     if (normalize == 1) {
       # Intervert the first line with the last line of Amat and bvec
-      meq = sum(sense == "E")
       tmp = bvec[(length(bvec) - meq + 1):length(bvec)]
       bvec[(meq + 1):length(bvec)] = bvec[1:(length(bvec) - meq)]
       bvec[1:meq] = tmp
@@ -253,7 +253,7 @@
 
     cat(format("  quadprog optimizer is open..."), "\n")
     cat(format("  Finding the optimal weights..."), "\n")
-    out = quadprog::solve.QP(Dmat, dvec = cvec, Amat4, bvec4, meq = 1)
+    out = quadprog::solve.QP(Dmat, dvec = cvec, Amat4, bvec4, meq = meq)
   }
   # Get weights
   weights = (out$solution)[1:n]
