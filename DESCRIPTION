@@ -1,7 +1,7 @@
 Package: sbw
 Type: Package
-Version: 1.1.9
-Date: 2024-07-12
+Version: 1.2
+Date: 2025-10-15
 Title: Stable Balancing Weights for Causal Inference and Missing Data
 Authors@R: c(person("Jose R.", "Zubizarreta", role = c("aut", "cre"),
                      email = "zubizarreta@hcp.med.harvard.edu"),
@@ -18,16 +18,16 @@ Depends: R (>= 3.2), Matrix, quadprog, slam
 Imports: MASS, spatstat.univar
 Enhances: gurobi, Rcplex, Rmosek, pogs, osqp
 License: GPL-2 | GPL-3
-Description: Implements the Stable Balancing Weights by Zubizarreta (2015) <DOI:10.1080/01621459.2015.1023805>. These are the weights of minimum variance that approximately balance the empirical distribution of the observed covariates. For an overview, see Chattopadhyay, Hase and Zubizarreta (2020) <DOI:10.1002/sim.8659>. To solve the optimization problem in 'sbw', the default solver is 'quadprog', which is readily available through CRAN. The solver 'osqp' is also posted on CRAN. To enhance the performance of 'sbw', users are encouraged to install other solvers such as 'gurobi' and 'Rmosek', which require special installation. For the installation of gurobi and pogs, please follow the instructions at <https://www.gurobi.com/documentation/current/refman/r_ins_the_r_package.html> and <http://foges.github.io/pogs/stp/r>.
+Description: Implements the Stable Balancing Weights by Zubizarreta (2015) <DOI:10.1080/01621459.2015.1023805>. These are the weights of minimum variance that approximately balance the empirical distribution of the observed covariates. For an overview, see Chattopadhyay, Hase and Zubizarreta (2020) <DOI:10.1002/sim.8659>. To solve the optimization problem in 'sbw', the default solver is 'quadprog', which is readily available through CRAN. The solver 'osqp' is also posted on CRAN. To enhance the performance of 'sbw', users are encouraged to install other solvers such as 'gurobi' and 'Rmosek', which require special installation. For the installation of gurobi and pogs, please follow the instructions at <https://docs.gurobi.com/projects/optimizer/en/current/reference/r.html> and <http://foges.github.io/pogs/stp/r>.
 RoxygenNote: 7.2.1
 Encoding: UTF-8
 Suggests: knitr, rmarkdown
 NeedsCompilation: no
-Packaged: 2024-07-12 12:02:12 UTC; yige
+Packaged: 2025-10-16 16:55:13 UTC; yige
 Author: Jose R. Zubizarreta [aut, cre],
   Yige Li [aut],
   Kwangho Kim [aut],
   Amine Allouah [ctb],
   Noah Greifer [ctb]
 Repository: CRAN
-Date/Publication: 2024-07-27 22:20:06 UTC
+Date/Publication: 2025-10-17 11:20:12 UTC

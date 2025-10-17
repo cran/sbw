@@ -1,10 +1,10 @@
-df761349a7c74e60dbcd5edcce4940b2 *DESCRIPTION
+f65a97e1dadd9c1996ab652f86176f56 *DESCRIPTION
 3c9d2370996eab5bdc93035f677824d3 *NAMESPACE
 8e5d9dff8b8da3f2c197a44514c49045 *R/data.R
 fbbaa05977792e89cd17b88f4ca6febe *R/duatab.R
 3beec51938a745bf80c8d6fef1e0e84a *R/estimate.R
 b4e7c356b6a77ad949d6b3481c4c7ec1 *R/propar.R
-eb4c1d7577fbd5d3dd20fe87e4d129a7 *R/sbw.R
+c7d7e62b565e805deb71baf24eaa46b1 *R/sbw.R
 8418976660eaa0c0a6b809a96b47a1aa *R/sbwauxfix.R
 3b46e03a2466bf5a49e2ae5e91613e9c *R/sbwauxtun.R
 df5a44794bc46cf9d714751c58d1d62a *R/sbwcaufix.R
@@ -12,11 +12,11 @@ e67633f8fd83a3c48ee3f1dd081324e8 *R/sbwcautun.R
 040b00f4fe488f103d803d94bee3a51b *R/sbwfix.R
 c6aa82666e85eafed97a5bae61113253 *R/sbwpri.R
 b7b09e07561f5dfefbf8c27ab82a42fa *R/sbwtun.R
-f45d86d0271f8d155cfe37eed28ae208 *R/summarize.R
+73fb1d066122798ed6ea8553b89101f9 *R/summarize.R
 22d24eb855e1194d2d9fa03cde07daac *R/visualize.R
 7c8f4dadefa6fd57a06a23067605dda0 *data/lalonde.rda
 a73445b94e2f827a4fd14dcad836f824 *man/estimate.Rd
 5319a1d28396db3b5eb38492aac52d10 *man/lalonde.Rd
-62070f4c1db3304f7023c39485490c87 *man/sbw.Rd
+02c5127e619cd6fae2cdf748dcd8c2b9 *man/sbw.Rd
 c424f1e56c21a01cfbaabc7504a606f4 *man/summarize.Rd
 066567c46c67c8dd136353644291aacf *man/visualize.Rd

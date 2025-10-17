@@ -139,8 +139,8 @@
   target = rep(NA, length(means_b0))
   tolerance = rep(NA, length(means_b0))
   
-  target[match(bal$bal_cov,colnames(dat))] = object$bal$bal_tar
-  tolerance[match(bal$bal_cov,colnames(dat))] = object$bal$bal_tol
+  target[match(object$bal$bal_cov,colnames(dat))] = object$bal$bal_tar
+  tolerance[match(object$bal$bal_cov,colnames(dat))] = object$bal$bal_tol
   
   if (object$bal$bal_std %in% "group") {
     dif_b0 = as.vector(abs(target - means_b0)/sds_b0)
@@ -286,8 +286,8 @@
   target = rep(NA, length(means_b0))
   tolerance = rep(NA, length(means_b0))
   
-  target[match(bal$bal_cov,colnames(dat))] = object$bal$bal_tar
-  tolerance[match(bal$bal_cov,colnames(dat))] = object$bal$bal_tol
+  target[match(object$bal$bal_cov,colnames(dat))] = object$bal$bal_tar
+  tolerance[match(object$bal$bal_cov,colnames(dat))] = object$bal$bal_tol
 
   if (object$bal$bal_std %in% "group") {
     dif_b0 = as.vector(abs(target - means_b0)/sds_b0)
